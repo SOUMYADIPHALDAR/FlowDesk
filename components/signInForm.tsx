@@ -7,13 +7,29 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import Link from "next/link";
+import SignInAction from "@/action/sign-in.action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [isPending] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setIsPending(true);
+
+    const formData = new FormData(e.currentTarget);
+    const { error } = await SignInAction(formData);
+
+    if (error) {
+      toast.error(error);
+      setIsPending(false);
+    } else {
+      toast.success("User logged in successfully.");
+      router.push("/dashboard");
+    }
   }
 
   return (
@@ -84,6 +100,7 @@ export default function SignInForm() {
 
         {/* Login Button */}
         <Button
+          type="submit"
           disabled={isPending}
           className="h-12 w-full rounded bg-black text-sm font-medium cursor-pointer text-white hover:bg-neutral-900"
         >
