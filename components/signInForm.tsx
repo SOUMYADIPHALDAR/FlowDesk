@@ -33,41 +33,53 @@ export default function SignInForm() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <h2 className="text-3xl font-extrabold tracking-tight text-black">
-        Welcome back, Yash
-      </h2>
+    <div className="w-full max-w-md">
+      <div className="mb-6">
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
+          Welcome back, Yash
+        </h2>
 
-      <p className="mt-3 text-sm text-black/70">
-        Welcome back! Please enter your details.
-      </p>
+        <p className="mt-2 text-sm leading-6 text-slate-600">
+          Please enter your details to continue into your workspace.
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="mt-10 space-y-7">
-        {/* Email */}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Email address
+          </label>
           <Input
             type="email"
             id="email"
             name="email"
-            placeholder="Enter your email"
-            className="h-10 rounded-none border-0 border-b border-[#cfcfcf] px-0 text-sm text-black shadow-none placeholder:text-gray-500 focus-visible:border-black focus-visible:ring-0"
+            placeholder="Enter your email.."
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-[#1E638A] focus-visible:ring-2 focus-visible:ring-[#9AC3D7]/50"
           />
         </div>
 
-        {/* Password */}
         <div className="relative">
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Password
+          </label>
           <Input
             type={showPassword ? "text" : "password"}
             id="password"
             name="password"
-            placeholder="Password"
-            className="h-10 rounded-none border-0 border-b border-[#cfcfcf] px-0 pr-8 text-sm text-black shadow-none placeholder:text-gray-500 focus-visible:border-black focus-visible:ring-0"
+            placeholder="Enter your password"
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 pr-10 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-[#1E638A] focus-visible:ring-2 focus-visible:ring-[#9AC3D7]/50"
           />
 
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-black/60 hover:text-black"
+            className="absolute right-3 top-[2.45rem] text-slate-500 transition hover:text-slate-800"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -78,42 +90,39 @@ export default function SignInForm() {
           </button>
         </div>
 
-        {/* Terms + Forgot */}
-        <div className="flex items-center justify-between gap-4 text-xs text-black">
+        <div className="flex items-center justify-between gap-4 text-sm text-slate-600">
           <div className="flex items-center space-x-2">
             <Checkbox
               id="terms"
-              className="size-4 rounded-none border-[#d9d9d9]"
+              className="size-4 rounded border-slate-300 data-[state=checked]:bg-[#1E638A] data-[state=checked]:text-white"
             />
             <Label htmlFor="terms" className="cursor-pointer font-normal">
-              Terms & Conditions
+              Remember me
             </Label>
           </div>
 
           <button
             type="button"
-            className="underline underline-offset-2 hover:text-black/70"
+            className="font-medium text-[#1E638A] transition hover:text-[#0B3051]"
           >
             Forgot Password
           </button>
         </div>
 
-        {/* Login Button */}
         <Button
           type="submit"
           disabled={isPending}
-          className="h-12 w-full rounded bg-black text-sm font-medium cursor-pointer text-white hover:bg-neutral-900"
+          className="h-11 w-full cursor-pointer rounded-xl bg-[#0B3051] text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[#09253f] hover:shadow-md"
         >
-          Log in
+          {isPending ? "Signing in..." : "Log in"}
         </Button>
 
-        {/* Signup */}
-        <p className="text-center text-xs text-black">
+        <p className="text-center text-sm text-slate-600">
           Don&apos;t have an account?{" "}
           <Link
             href="/auth/register"
             type="button"
-            className="font-semibold underline underline-offset-2 mr-1 cursor-pointer"
+            className="mr-1 cursor-pointer font-semibold text-[#1E638A] underline-offset-2 hover:text-[#0B3051]"
           >
             Sign up
           </Link>

@@ -43,52 +43,72 @@ export default function SignUpForm() {
   }
 
   return (
-    <div className="w-full max-w-sm">
-      <h2 className="text-3xl font-extrabold tracking-tight text-black">
-        Create an account
-      </h2>
+    <div className="w-full max-w-md">
+      <div className="mb-6">
+        <h2 className="text-3xl font-semibold tracking-tight text-slate-900">
+          Create an account
+        </h2>
 
-      <p className="mt-3 text-sm text-black/70">
-        Start managing your projects with a clean FlowDesk workspace.
-      </p>
+        <p className="mt-2 text-sm leading-6 text-slate-600">
+          Start managing projects with a clean FlowDesk workspace.
+        </p>
+      </div>
 
-      <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
+          <label
+            htmlFor="name"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Full name
+          </label>
           <Input
             type="text"
             id="name"
             name="name"
             autoComplete="name"
-            placeholder="Full name"
-            className="h-10 rounded-none border-0 border-b border-[#cfcfcf] px-0 text-sm text-black shadow-none placeholder:text-gray-500 focus-visible:border-black focus-visible:ring-0"
+            placeholder="Enter your name.."
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-[#1E638A] focus-visible:ring-2 focus-visible:ring-[#9AC3D7]/50"
           />
         </div>
 
         <div>
+          <label
+            htmlFor="email"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Email address
+          </label>
           <Input
             type="email"
             id="email"
             name="email"
             autoComplete="email"
-            placeholder="Email address"
-            className="h-10 rounded-none border-0 border-b border-[#cfcfcf] px-0 text-sm text-black shadow-none placeholder:text-gray-500 focus-visible:border-black focus-visible:ring-0"
+            placeholder="Enter your email.."
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-[#1E638A] focus-visible:ring-2 focus-visible:ring-[#9AC3D7]/50"
           />
         </div>
 
         <div className="relative">
+          <label
+            htmlFor="password"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Password
+          </label>
           <Input
             type={showPassword ? "text" : "password"}
             id="password"
             name="password"
             autoComplete="new-password"
-            placeholder="Password"
-            className="h-10 rounded-none border-0 border-b border-[#cfcfcf] px-0 pr-8 text-sm text-black shadow-none placeholder:text-gray-500 focus-visible:border-black focus-visible:ring-0"
+            placeholder="Create a password"
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 pr-10 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-[#1E638A] focus-visible:ring-2 focus-visible:ring-[#9AC3D7]/50"
           />
 
           <button
             type="button"
             onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-black/60 hover:text-black"
+            className="absolute right-3 top-[2.45rem] text-slate-500 transition hover:text-slate-800"
             aria-label={showPassword ? "Hide password" : "Show password"}
           >
             {showPassword ? (
@@ -100,19 +120,25 @@ export default function SignUpForm() {
         </div>
 
         <div className="relative">
+          <label
+            htmlFor="confirm-password"
+            className="mb-2 block text-sm font-medium text-slate-700"
+          >
+            Confirm password
+          </label>
           <Input
             type={showConfirmPassword ? "text" : "password"}
             id="confirm-password"
             name="confirmPassword"
             autoComplete="new-password"
-            placeholder="Confirm password"
-            className="h-10 rounded-none border-0 border-b border-[#cfcfcf] px-0 pr-8 text-sm text-black shadow-none placeholder:text-gray-500 focus-visible:border-black focus-visible:ring-0"
+            placeholder="Re-enter password"
+            className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3.5 pr-10 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus-visible:border-[#1E638A] focus-visible:ring-2 focus-visible:ring-[#9AC3D7]/50"
           />
 
           <button
             type="button"
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            className="absolute right-0 top-1/2 -translate-y-1/2 text-black/60 hover:text-black"
+            className="absolute right-3 top-[2.45rem] text-slate-500 transition hover:text-slate-800"
             aria-label={
               showConfirmPassword
                 ? "Hide confirmed password"
@@ -127,10 +153,10 @@ export default function SignUpForm() {
           </button>
         </div>
 
-        <div className="flex items-start gap-2 text-xs leading-5 text-black">
+        <div className="flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-xs leading-5 text-slate-600">
           <Checkbox
             id="terms"
-            className="mt-0.5 size-4 rounded-none border-[#d9d9d9]"
+            className="mt-0.5 size-4 rounded border-slate-300 data-[state=checked]:bg-[#1E638A] data-[state=checked]:text-white"
           />
           <Label htmlFor="terms" className="cursor-pointer font-normal">
             I agree to the Terms & Conditions and Privacy Policy.
@@ -140,16 +166,16 @@ export default function SignUpForm() {
         <Button
           type="submit"
           disabled={isPending}
-          className="h-12 w-full cursor-pointer rounded bg-black text-sm font-medium text-white hover:bg-neutral-900"
+          className="h-11 w-full cursor-pointer rounded-xl bg-[#0B3051] text-sm font-semibold text-white shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-[#09253f] hover:shadow-md"
         >
-          Create account
+          {isPending ? "Creating account..." : "Create account"}
         </Button>
 
-        <p className="text-center text-xs text-black">
+        <p className="text-center text-sm text-slate-600">
           Already have an account?{" "}
           <Link
             href="/auth/signin"
-            className="font-semibold underline underline-offset-2 hover:text-black/70"
+            className="font-semibold text-[#1E638A] underline-offset-2 hover:text-[#0B3051]"
           >
             Log in
           </Link>
