@@ -38,7 +38,7 @@ export default function SignUpForm() {
       setIsPending(false);
     } else {
       toast.success("Registration successful.");
-      router.push("/auth/signin");
+      router.push("/signin");
     }
   }
 
@@ -174,7 +174,7 @@ export default function SignUpForm() {
         <p className="text-center text-sm text-slate-600">
           Already have an account?{" "}
           <Link
-            href="/auth/signin"
+            href="/signin"
             className="font-semibold text-[#1E638A] underline-offset-2 hover:text-[#0B3051]"
           >
             Log in

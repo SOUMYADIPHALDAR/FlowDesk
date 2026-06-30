@@ -120,7 +120,7 @@ export default function SignInForm() {
         <p className="text-center text-sm text-slate-600">
           Don&apos;t have an account?{" "}
           <Link
-            href="/auth/register"
+            href="/register"
             type="button"
             className="mr-1 cursor-pointer font-semibold text-[#1E638A] underline-offset-2 hover:text-[#0B3051]"
           >

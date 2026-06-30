@@ -32,7 +32,7 @@ export default function SignInOAuth({ provider, signUp }: SignInOAuthProps) {
     });
   }
 
-  const action = signUp ? "UP" : "IN";
+  const action = signUp ? "In" : "Up";
   const providerName = provider === "google" ? "Google" : "Github";
   const initial = provider === "google" ? "G" : "GH";
 
