@@ -13,7 +13,6 @@ datasource db {
 }
 
 enum UserRole {
-  MANAGER
   ADMIN
   USER
 }
@@ -42,11 +41,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name     String
-  email    String  @unique
-  emailVerified Boolean @default(false)
-  image    String?
-  avatar   String?
+  name          String
+  email         String    @unique
+  emailVerified Boolean   @default(false)
+  image         String?
+  role          UserRole  @default(USER)
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
 
   projects Project[] @relation("ProjectOwner")
   tasks    Task[]    @relation("TaskAssign")
