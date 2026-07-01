@@ -21,14 +21,16 @@ export default function SignInForm() {
     setIsPending(true);
 
     const formData = new FormData(e.currentTarget);
-    const { error } = await SignInAction(formData);
+    const { error, data } = await SignInAction(formData);
 
     if (error) {
       toast.error(error);
       setIsPending(false);
     } else {
       toast.success("User logged in successfully.");
-      router.push("/user/dashboard");
+      router.push(
+        data?.user.role === "ADMIN" ? "/admin/dashboard" : "/user/dashboard",
+      );
     }
   }
 

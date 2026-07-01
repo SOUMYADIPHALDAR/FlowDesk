@@ -12,14 +12,14 @@ export default async function SignInAction(formData: FormData) {
   if (!password) return { error: "Enter your password." };
 
   try {
-    await auth.api.signInEmail({
+    const data = await auth.api.signInEmail({
       headers: await headers(),
       body: {
         email,
         password,
       },
     });
-    return { error: null };
+    return { error: null, data };
   } catch (err) {
     if (err instanceof APIError) {
       return { error: err.message };

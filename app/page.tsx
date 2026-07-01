@@ -1,27 +1,11 @@
-"use client";
 
-import Loading from "@/components/loading";
-import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import GetStartedButton from "@/components/get-started-button";
 
-export default function Home() {
-  const {data: session, isPending} = useSession();
-
-  if(isPending) {
-    return <Loading />
-  }
-
-  if (session) {
-    if(session.user.role === "ADMIN"){
-      redirect("/admin/dashborad")
-    }
-    redirect("/user/dashboard");
-  }
-
+export default async function Home() {
+  
   return (
     <main className="min-h-screen bg-gray-50">
-
       {/* Hero */}
       <section className="mx-auto flex max-w-5xl flex-col items-center px-6 py-24 text-center">
         <h2 className="mb-6 text-5xl font-bold">
@@ -31,20 +15,15 @@ export default function Home() {
         </h2>
 
         <p className="mb-10 max-w-2xl text-lg text-gray-600">
-          FlowDesk helps teams organize projects, assign tasks,
-          track progress, and collaborate from one place.
+          FlowDesk helps teams organize projects, assign tasks, track progress,
+          and collaborate from one place.
         </p>
 
         <div className="flex gap-4">
-          <Link
-            href="/register"
-            className="rounded-lg bg-blue-600 px-6 py-3 font-medium text-white hover:bg-blue-700"
-          >
-            Get Started
-          </Link>
+          <GetStartedButton />
 
           <Link
-            href="/login"
+            href="/signin"
             className="rounded-lg border border-gray-300 px-6 py-3 font-medium hover:bg-gray-100"
           >
             Login
@@ -75,7 +54,7 @@ export default function Home() {
         © 2026 FlowDesk. All rights reserved.
       </footer>
     </main>
-  );;
+  );
 }
 
 function FeatureCard({

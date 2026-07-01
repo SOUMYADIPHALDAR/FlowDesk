@@ -12,8 +12,9 @@ import { Input } from "./ui/input";
 export default function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
-  
-  const profile = session?.user.role === "ADMIN" ? "/admin/profile" : "/user/profile";
+
+  const profile =
+    session?.user.role === "ADMIN" ? "/admin/profile" : "/user/profile";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl">
