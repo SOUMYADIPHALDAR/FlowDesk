@@ -12,6 +12,8 @@ import { Input } from "./ui/input";
 export default function Navbar() {
   const router = useRouter();
   const { data: session } = useSession();
+  
+  const profile = session?.user.role === "ADMIN" ? "/admin/profile" : "/user/profile";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl">
@@ -34,7 +36,7 @@ export default function Navbar() {
 
         {/* Right Section */}
         <div className="flex flex-1 min-w-0 items-center justify-end gap-3 md:gap-6">
-          <div className="relative sm:flex flex-1 max-w-[420px]">
+          <div className="relative sm:flex flex-1 max-w-105">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#787486]" />
 
             <Input
@@ -47,7 +49,7 @@ export default function Navbar() {
             <>
               {/* Desktop User */}
               <Link
-                href="/profile"
+                href={profile}
                 className="hidden items-center gap-3 lg:flex"
               >
                 <div className="text-right">
@@ -72,7 +74,7 @@ export default function Navbar() {
               </Link>
 
               {/* Mobile Avatar Only */}
-              <Link href="/profile" className="lg:hidden">
+              <Link href={profile} className="lg:hidden">
                 <Avatar className="h-10 w-10 border border-[#F0F6FF]">
                   {session.user.image ? (
                     <AvatarImage src={session.user.image} />

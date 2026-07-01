@@ -1,6 +1,6 @@
 import Sidebar from "@/components/side-bar";
 
-export default function DashboardLayout({
+export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -8,7 +8,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen overflow-hidden bg-slate-50">
       {/* Sidebar */}
-      <aside className="w-20 lg:w-72 border-r bg-white shadow-md shrink-0">
+      <aside className="w-20 lg:w-72 border-r bg-white shadow-md shrink-0 sticky top-0 h-screen overflow-hidden">
         <Sidebar />
       </aside>
 

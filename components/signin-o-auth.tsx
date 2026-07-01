@@ -16,7 +16,7 @@ export default function SignInOAuth({ provider, signUp }: SignInOAuthProps) {
   async function handleClick() {
     await signIn.social({
       provider,
-      callbackURL: "/profile",
+      callbackURL: "/user/profile",
       errorCallbackURL: "/auth/register",
       fetchOptions: {
         onRequest: () => {

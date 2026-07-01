@@ -28,7 +28,7 @@ export default function SignInForm() {
       setIsPending(false);
     } else {
       toast.success("User logged in successfully.");
-      router.push("/dashboard");
+      router.push("/user/dashboard");
     }
   }
 

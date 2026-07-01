@@ -1,56 +1,86 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { redirect, usePathname } from "next/navigation";
 
 import {
-  CircleUser,
-  FileText,
-  Image,
-  MessageSquare,
+  FolderKanban,
+  Logs,
+  ListTodo,
+  TrendingUp,
   Settings,
-  Palette,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { useSession } from "@/lib/auth-client";
 
-const navItems = [
+const userLinks = [
   {
-    label: "Profile",
-    href: "/dashboard/profile",
-    icon: CircleUser,
+    label: "Project",
+    href: "/user/project",
+    icon: FolderKanban,
   },
   {
-    label: "Gallery",
-    href: "/dashboard/gallery",
-    icon: Image,
+    label: "Tasks",
+    href: "/user/tasks",
+    icon: ListTodo,
   },
   {
-    label: "Documents",
-    href: "/dashboard/documents",
-    icon: FileText,
+    label: "Work Logs",
+    href: "/user/worklog",
+    icon: Logs,
   },
   {
-    label: "Messages",
-    href: "/dashboard/messages",
-    icon: MessageSquare,
+    label: "Performance",
+    href: "/user/preformace",
+    icon: TrendingUp,
   },
   {
     label: "Settings",
-    href: "/dashboard/settings",
+    href: "/settings",
+    icon: Settings,
+  },
+];
+
+const adminLinks = [
+  {
+    label: "Project",
+    href: "/admin/project",
+    icon: FolderKanban,
+  },
+  {
+    label: "Tasks",
+    href: "/admin/tasks",
+    icon: ListTodo,
+  },
+  {
+    label: "Work Logs",
+    href: "/admin/worklog",
+    icon: Logs,
+  },
+  {
+    label: "Performance",
+    href: "/admin/preformace",
+    icon: TrendingUp,
+  },
+  {
+    label: "Settings",
+    href: "/settings",
     icon: Settings,
   },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { data: session } = useSession();
+
+  const links = session?.user.role === "ADMIN" ? adminLinks : userLinks;
 
   return (
     <div className="flex h-full flex-col">
-
       {/* Navigation */}
       <nav className="flex flex-1 flex-col gap-2 p-2 md:p-4">
-        {navItems.map((item) => {
+        {links.map((item) => {
           const Icon = item.icon;
 
           const active = pathname === item.href;
@@ -70,14 +100,14 @@ export default function Sidebar() {
 
                 active
                   ? "bg-blue-50 text-blue-700"
-                  : "text-slate-600 hover:bg-slate-100"
+                  : "text-slate-600 hover:bg-slate-100",
               )}
             >
               <div
                 className={cn(
-                  "flex h-10 w-10 items-center justify-center rounded-lg",
+                  "flex h-10 w-10 items-center justify-center rounded-lg ",
 
-                  active ? "bg-white" : "bg-slate-100"
+                  active ? "bg-white" : "bg-slate-100",
                 )}
               >
                 <Icon className="h-5 w-5" />
@@ -87,7 +117,7 @@ export default function Sidebar() {
               <span
                 className={cn(
                   "hidden text-sm lg:block",
-                  active ? "font-semibold" : "font-medium"
+                  active ? "font-semibold" : "font-medium",
                 )}
               >
                 {item.label}
