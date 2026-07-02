@@ -29,7 +29,7 @@ export default function SignInForm() {
     } else {
       toast.success("User logged in successfully.");
       router.push(
-        data?.user.role === "ADMIN" ? "/admin/dashboard" : "/user/dashboard",
+        data?.user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard",
       );
     }
   }

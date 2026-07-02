@@ -1,9 +1,7 @@
-
 import Link from "next/link";
 import GetStartedButton from "@/components/get-started-button";
 
 export default async function Home() {
-  
   return (
     <main className="min-h-screen bg-gray-50">
       {/* Hero */}
@@ -24,7 +22,7 @@ export default async function Home() {
 
           <Link
             href="/signin"
-            className="rounded-lg border border-gray-300 px-6 py-3 font-medium hover:bg-gray-100"
+            className="rounded-lg border border-gray-300 px-5 font-medium transition-all duration-200 hover:bg-gray-100 hover:-translate-y-0.5"
           >
             Login
           </Link>
