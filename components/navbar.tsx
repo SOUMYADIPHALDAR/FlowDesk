@@ -4,17 +4,25 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import GetStartedButton from "@/components/get-started-button";
-import { useSession } from "@/lib/auth-client";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Palette, Search } from "lucide-react";
 import { Input } from "./ui/input";
+import { useAuth } from "@/lib/auth-context";
 
 export default function Navbar() {
   const router = useRouter();
-  const { data: session } = useSession();
-
-  const profile =
-    session?.user.role === "ADMIN" ? "/admin/profile" : "/user/profile";
+  const { session } = useAuth();
+  
+  const profile = session?.role === "ADMIN" ? "/admin/profile" : "/profile";
+  const landingHref = session ? profile : "/signin";
+  const userName = session?.name ?? "User";
+  const initials =
+    userName
+      .split(" ")
+      .filter(Boolean)
+      .map((word: string) => word[0])
+      .join("")
+      .toUpperCase() || "U";
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl">
@@ -55,21 +63,15 @@ export default function Navbar() {
               >
                 <div className="text-right">
                   <p className="text-base font-normal text-[#0D062D]">
-                    {session.user.name}
+                    {userName}
                   </p>
                 </div>
 
                 <Avatar className="h-12 w-12 border border-[#F0F6FF]">
-                  {session.user.image ? (
-                    <AvatarImage src={session.user.image} />
+                  {session.image ? (
+                    <AvatarImage src={session.image} />
                   ) : (
-                    <AvatarFallback>
-                      {session.user.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .toUpperCase()}
-                    </AvatarFallback>
+                    <AvatarFallback>{initials}</AvatarFallback>
                   )}
                 </Avatar>
               </Link>
@@ -77,16 +79,10 @@ export default function Navbar() {
               {/* Mobile Avatar Only */}
               <Link href={profile} className="lg:hidden">
                 <Avatar className="h-10 w-10 border border-[#F0F6FF]">
-                  {session.user.image ? (
-                    <AvatarImage src={session.user.image} />
+                  {session.image ? (
+                    <AvatarImage src={session.image} />
                   ) : (
-                    <AvatarFallback>
-                      {session.user.name
-                        .split(" ")
-                        .map((word) => word[0])
-                        .join("")
-                        .toUpperCase()}
-                    </AvatarFallback>
+                    <AvatarFallback>{initials}</AvatarFallback>
                   )}
                 </Avatar>
               </Link>
@@ -99,12 +95,12 @@ export default function Navbar() {
                   Login
                 </Button>
 
-                <GetStartedButton />
+                <GetStartedButton href={landingHref} />
               </div>
 
               {/* Mobile: Get Started Only */}
               <div className="lg:hidden">
-                <GetStartedButton />
+                <GetStartedButton href={landingHref} />
               </div>
             </>
           )}
