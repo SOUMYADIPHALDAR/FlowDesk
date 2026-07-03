@@ -13,11 +13,13 @@ interface SignInOAuthProps {
 export default function SignInOAuth({ provider, signUp }: SignInOAuthProps) {
   const [isPending, setIsPending] = useState(false);
 
+  const errorDestination = signUp ? "/register" : "/signin";
+
   async function handleClick() {
     await signIn.social({
       provider,
-      callbackURL: "/profile",
-      errorCallbackURL: "/auth/register",
+      callbackURL: "/callback",
+      errorCallbackURL: errorDestination,
       fetchOptions: {
         onRequest: () => {
           setIsPending(true);
@@ -32,7 +34,7 @@ export default function SignInOAuth({ provider, signUp }: SignInOAuthProps) {
     });
   }
 
-  const action = signUp ? "In" : "Up";
+  const action = signUp ? "Up" : "In";
   const providerName = provider === "google" ? "Google" : "Github";
   const initial = provider === "google" ? "G" : "GH";
 

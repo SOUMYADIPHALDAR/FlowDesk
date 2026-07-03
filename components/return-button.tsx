@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "./ui/button";
+import { buttonVariants } from "./ui/button";
 import { ArrowLeftIcon } from "lucide-react";
 
 interface ReturnButtonProps {
@@ -9,10 +9,8 @@ interface ReturnButtonProps {
 
 export default function ReturnButton({ href, label }: ReturnButtonProps) {
   return (
-    <Button size="sm">
-      <Link href={href}>
-        <ArrowLeftIcon /> {label}
-      </Link>
-    </Button>
+    <Link href={href} className={buttonVariants({ size: "sm" })}>
+      <ArrowLeftIcon /> {label}
+    </Link>
   );
 }

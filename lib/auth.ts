@@ -33,6 +33,14 @@ export const auth = betterAuth({
   session: {
     expiresIn: 24 * 60 * 60,
   },
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google", "github"],
+      disableImplicitLinking: false,
+      requireLocalEmailVerified: false,
+    },
+  },
   plugins: [
     admin({
       defaultRole: UserRole.USER,

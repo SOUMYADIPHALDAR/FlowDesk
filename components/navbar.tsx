@@ -95,12 +95,12 @@ export default function Navbar() {
                   Login
                 </Button>
 
-                <GetStartedButton href={landingHref} />
+                <GetStartedButton />
               </div>
 
               {/* Mobile: Get Started Only */}
               <div className="lg:hidden">
-                <GetStartedButton href={landingHref} />
+                <GetStartedButton />
               </div>
             </>
           )}

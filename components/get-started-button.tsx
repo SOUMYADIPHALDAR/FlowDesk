@@ -1,20 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "./ui/button";
-import { useState } from "react";
+import { buttonVariants } from "./ui/button";
 import { useAuth } from "@/lib/auth-context";
 
-export default function GetStartedButton({ href }: { href?: string }) {
-  const [isPending] = useState(false);
+export default function GetStartedButton() {
   const { session } = useAuth();
 
-  const destination =
-    href ?? (session?.role === "ADMIN" ? "/admin/dashboard" : "/dashboard");
+  const dashboard =
+    session?.role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
+
+  const destination = session ? dashboard : "/signin";
 
   return (
-    <Button size="sm" disabled={isPending} className="hover:-translate-y-0.5">
-      <Link href={destination}>Get Started</Link>
-    </Button>
+    <Link
+      href={destination}
+      className={buttonVariants({
+        size: "sm",
+        className: "hover:-translate-y-0.5",
+      })}
+    >
+      Get Started
+    </Link>
   );
 }

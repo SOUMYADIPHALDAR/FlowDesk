@@ -41,8 +41,8 @@ export default function LoginPage() {
                     Or continue with
                   </div>
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <SignInOAuth signUp provider="google" />
-                    <SignInOAuth signUp provider="github" />
+                    <SignInOAuth provider="google" />
+                    <SignInOAuth provider="github" />
                   </div>
                 </div>
               </div>

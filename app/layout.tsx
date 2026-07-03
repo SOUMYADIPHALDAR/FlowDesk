@@ -6,7 +6,6 @@ import NavbarSwitcher from "@/components/navbar-switcher";
 import { AuthProvider } from "@/lib/auth-context";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

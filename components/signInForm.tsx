@@ -10,11 +10,13 @@ import Link from "next/link";
 import SignInAction from "@/action/sign-in.action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth-context";
 
 export default function SignInForm() {
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
+  const { setSession} = useAuth();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,6 +29,7 @@ export default function SignInForm() {
       toast.error(error);
       setIsPending(false);
     } else {
+      setSession(data?.user ?? null);
       toast.success("User logged in successfully.");
       router.push(
         data?.user.role === "ADMIN" ? "/admin/dashboard" : "/dashboard",
