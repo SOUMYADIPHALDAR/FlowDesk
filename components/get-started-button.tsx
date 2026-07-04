@@ -7,9 +7,9 @@ import { useAuth } from "@/lib/auth-context";
 export default function GetStartedButton() {
   const { session } = useAuth();
 
+  const normalizedRole = session?.role?.toUpperCase();
   const dashboard =
-    session?.role === "ADMIN" ? "/admin/dashboard" : "/dashboard";
-
+    normalizedRole === "ADMIN" ? "/admin/dashboard" : "/dashboard";
   const destination = session ? dashboard : "/signin";
 
   return (

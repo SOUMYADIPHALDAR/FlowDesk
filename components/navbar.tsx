@@ -12,9 +12,9 @@ import { useAuth } from "@/lib/auth-context";
 export default function Navbar() {
   const router = useRouter();
   const { session } = useAuth();
-  
-  const profile = session?.role === "ADMIN" ? "/admin/profile" : "/profile";
-  const landingHref = session ? profile : "/signin";
+
+  const normalizedRole = session?.role?.toUpperCase();
+  const profile = normalizedRole === "ADMIN" ? "/admin/profile" : "/profile";
   const userName = session?.name ?? "User";
   const initials =
     userName
