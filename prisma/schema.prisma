@@ -114,6 +114,7 @@ model Project {
 
   name        String
   description String?
+  image       String?
   status      ProjectStatus @default(ACTIVE)
 
   createdAt DateTime @default(now())
