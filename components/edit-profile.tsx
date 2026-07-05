@@ -8,10 +8,13 @@ import { ImageUp } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import UpdateProfileAction from "@/action/update-profile.action";
+import { useAuth } from "@/lib/auth-context";
 
 export default function EditProfileForm() {
   const [isPending, setIsPending] = useState(false);
   const router = useRouter();
+  const { setSession } = useAuth();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -19,43 +22,53 @@ export default function EditProfileForm() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const profileImage = formData.get("profileImage");
-
-      if (profileImage instanceof File && profileImage.size > 0) {
+      const fileInput = formData.get("file") as File | null;
+      
+      let image = "";
+      let uploadResponse = "";
+      
+      // Only upload if a file is selected
+      if (fileInput && fileInput.size > 0) {
         const uploadFormData = new FormData();
-        uploadFormData.set("file", profileImage);
-
+        uploadFormData.append("file", fileInput);
+        
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
           body: uploadFormData,
-        });
+        }).then((res) => res.json());
 
-        if (!uploadResponse.ok) {
-          throw new Error("Image upload failed");
+        if (uploadResponse.error) {
+          toast.error(uploadResponse.error);
+          setIsPending(false);
+          return;
         }
-
-        const uploadData = await uploadResponse.json();
-        formData.set("image", uploadData.imageUrl);
+        
+        image = uploadResponse?.url || "";
       }
 
-      const response = await fetch("/api/profile", {
-        method: "POST",
-        body: formData,
+      const phone = String(formData.get("phone"));
+      const jobRole = String(formData.get("jobRole"));
+      const address = String(formData.get("address"));
+
+      const result = await UpdateProfileAction({
+        phone,
+        jobRole,
+        address,
+        image,
       });
 
-      const result = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(result.message ?? "Unable to update profile");
+      if (result.error) {
+        toast.error(result.error);
+        setIsPending(false);
+      } else {
+        if (result.data) {
+          setSession(result.data);
+        }
+        toast.success("Profile updated successfully..");
+        router.refresh();
       }
-
-      toast.success("Profile updated");
-      router.refresh();
-      e.currentTarget.reset();
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Unable to update profile",
-      );
+      toast.error("Failed to update profile");
     } finally {
       setIsPending(false);
     }
@@ -107,7 +120,7 @@ export default function EditProfileForm() {
 
                 <input
                   id="profileImage"
-                  name="profileImage"
+                  name="file"
                   type="file"
                   accept="image/*"
                   className="hidden"

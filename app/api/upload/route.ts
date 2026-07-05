@@ -1,51 +1,46 @@
-import { Readable } from "stream";
-import streamifier from "streamifier";
 import cloudinary from "@/lib/cloudinary";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(req: Request) {
+interface CloudinaryUploadResutl {
+  public_id: string;
+  secure_url: string;
+  [key: string]: any;
+}
+
+export async function POST(req: NextRequest) {
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
     if (!file) {
-      return NextResponse.json({ message: "File not found." }, { status: 400 });
+      return NextResponse.json({ error: "File not found" }, { status: 400 });
     }
 
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
-    const stream = Readable.from(buffer);
 
-    const result = await new Promise<any>((resolve, reject) => {
-      const uploadStream = cloudinary.uploader.upload_stream(
-        {
-          folder: "nextjs",
-          resource_type: "image",
-        },
-        (error, result) => {
-          if (error) {
-            reject(error);
-            return;
-          }
-          resolve(result);
-        },
-      );
+    const result = await new Promise<CloudinaryUploadResutl>(
+      (resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+          { folder: "next_flowdesk" },
+          (error, result) => {
+            if (error) reject(error);
+            else resolve(result as CloudinaryUploadResutl);
+          },
+        );
+        uploadStream.end(buffer);
+      },
+    );
 
-      streamifier.createReadStream(buffer).pipe(uploadStream);
-    });
-
-    return NextResponse.json({
-      imageUrl: result.secure_url,
-      public_id: result.public_id,
-    });
-  } catch (error) {
-    console.error("Cloudinary upload failed", error);
     return NextResponse.json(
       {
-        message:
-          "Image upload failed. Please verify your Cloudinary credentials and upload settings.",
+        public_id: result.public_id,
+        url: result.secure_url,
       },
-      { status: 502 },
+      { status: 200 },
     );
+  } catch (err) {
+    console.log("Upload Image failed", err);
+    return NextResponse.json({ error: "Upload image failed" }, { status: 500 });
   }
 }
