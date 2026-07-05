@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export default function UserProfileCard() {
   const { session } = useAuth();
   const router = useRouter();
-  
+
   if (!session) {
     router.push("/signin");
   }
@@ -27,8 +27,8 @@ export default function UserProfileCard() {
   const icon = session?.role === "ADMIN" ? "⭐" : " ";
 
   return (
-    <Card className="w-[322px] rounded-[20px] bg-[#FDFEFF] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-      <CardContent className="p-6 flex flex-col items-center">
+    <Card className="w-full rounded-[20px] bg-[#FDFEFF] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+      <CardContent className="flex flex-col items-center p-4 sm:p-6">
         {/* Avatar */}
         <Avatar className="h-12 w-12 border border-[#F0F6FF]">
           {session?.image ? (
@@ -41,26 +41,25 @@ export default function UserProfileCard() {
         {session && (
           <div>
             {/* User Info */}
-            <div className="text-center space-y-2">
+            <div className="space-y-2 text-center sm:text-left">
               <h2 className="text-[16px] font-bold text-[#4B4B4B]">
-                {icon}{session.name}
+                {icon}
+                {session.name}
               </h2>
 
-              <div className="flex items-start gap-4">
-                <MapPin className="mt-1 h-6 w-6 text-[#4B4B4B]" />
-                <div>
-                  {session.address}
-                </div>
+              <div className="flex items-start gap-3">
+                <MapPin className="mt-1 h-5 w-5 shrink-0 text-[#4B4B4B]" />
+                <div className="text-sm text-slate-600">{session.address}</div>
               </div>
             </div>
 
             <Separator className="my-6 bg-[#D9E6F7]" />
 
             {/* Job */}
-            <div className="w-full space-y-6">
-              <div className="flex items-center gap-4">
-                <User className="w-6 h-6 text-[#4B4B4B]" />
-                <span className="text-[16px] text-[#4B4B4B]">
+            <div className="w-full space-y-4 sm:space-y-6">
+              <div className="flex items-center gap-3">
+                <User className="h-5 w-5 shrink-0 text-[#4B4B4B]" />
+                <span className="text-sm text-[#4B4B4B] sm:text-[16px]">
                   {session.jobRole}
                 </span>
               </div>
@@ -69,17 +68,17 @@ export default function UserProfileCard() {
             <Separator className="my-6 bg-[#D9E6F7]" />
 
             {/* Contact */}
-            <div className="w-full space-y-6">
-              <div className="flex items-center gap-4">
-                <Phone className="w-6 h-6 text-[#4B4B4B]" />
-                <span className="text-[16px] text-[#4B4B4B]">
+            <div className="w-full space-y-4 sm:space-y-6">
+              <div className="flex items-center gap-3">
+                <Phone className="h-5 w-5 shrink-0 text-[#4B4B4B]" />
+                <span className="break-all text-sm text-[#4B4B4B] sm:text-[16px]">
                   +91 {session.phone}
                 </span>
               </div>
 
-              <div className="flex items-center gap-4">
-                <Mail className="w-6 h-6 text-[#4B4B4B]" />
-                <span className="text-[16px] text-[#4B4B4B]">
+              <div className="flex items-center gap-3">
+                <Mail className="h-5 w-5 shrink-0 text-[#4B4B4B]" />
+                <span className="break-all text-sm text-[#4B4B4B] sm:text-[16px]">
                   {session.email}
                 </span>
               </div>

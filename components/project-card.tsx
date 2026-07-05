@@ -15,13 +15,13 @@ interface ProjectProps {
 
 export default function ProjectsCard({ projects }: ProjectProps) {
   const projectList = projects ?? [];
-  const router = useRouter()
+  const router = useRouter();
 
   return (
-    <Card className="w-full max-w-108 rounded-[20px] border-0 bg-[#FDFEFF] shadow-md">
-      <CardContent className="p-8">
+    <Card className="w-full rounded-[20px] border-0 bg-[#FDFEFF] shadow-md">
+      <CardContent className="p-4 sm:p-6 lg:p-8">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-[20px] font-bold text-[#4B4B4B]">Projects</h2>
 
           <Button
@@ -34,17 +34,17 @@ export default function ProjectsCard({ projects }: ProjectProps) {
         </div>
 
         {/* Projects Grid */}
-        <div className="grid grid-cols-3 gap-x-8 gap-y-10">
+        <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-8 lg:gap-x-8 lg:gap-y-10">
           {projectList.map((project) => (
             <div key={project.title} className="flex flex-col items-center">
               {project.image ? (
                 <img
                   src={project.image}
                   alt={project.title}
-                  className="h-24 w-24 rounded-[10px] object-cover"
+                  className="h-20 w-20 rounded-[10px] object-cover sm:h-24 sm:w-24"
                 />
               ) : (
-                <div className="flex h-24 w-24 items-center justify-center rounded-[10px] bg-slate-100 text-center text-sm text-slate-500">
+                <div className="flex h-20 w-20 items-center justify-center rounded-[10px] bg-slate-100 text-center text-sm text-slate-500 sm:h-24 sm:w-24">
                   No image
                 </div>
               )}

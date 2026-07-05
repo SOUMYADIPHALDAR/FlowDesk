@@ -19,8 +19,7 @@ export default function AdminProfile() {
     const userId = session?.id;
 
     if (!userId) {
-      router.push("/signin");
-      return;
+      throw new Error("Unauthorized access");
     }
 
     let isMounted = true;

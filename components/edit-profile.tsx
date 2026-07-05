@@ -23,15 +23,15 @@ export default function EditProfileForm() {
     try {
       const formData = new FormData(e.currentTarget);
       const fileInput = formData.get("file") as File | null;
-      
+
       let image = "";
       let uploadResponse = "";
-      
+
       // Only upload if a file is selected
       if (fileInput && fileInput.size > 0) {
         const uploadFormData = new FormData();
         uploadFormData.append("file", fileInput);
-        
+
         const uploadResponse = await fetch("/api/upload", {
           method: "POST",
           body: uploadFormData,
@@ -42,7 +42,7 @@ export default function EditProfileForm() {
           setIsPending(false);
           return;
         }
-        
+
         image = uploadResponse?.url || "";
       }
 
@@ -75,16 +75,16 @@ export default function EditProfileForm() {
   }
 
   return (
-    <Card className="w-[640px] rounded-[18px] bg-[#FDFEFF] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-      <CardHeader className="pb-5">
-        <CardTitle className="text-[26px] font-semibold text-[#0E2040]">
+    <Card className="w-full rounded-[18px] bg-[#FDFEFF] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+      <CardHeader className="pb-4 sm:pb-5">
+        <CardTitle className="text-[22px] font-semibold text-[#0E2040] sm:text-[26px]">
           Edit Profile
         </CardTitle>
       </CardHeader>
 
       <CardContent className="space-y-5">
         <form onSubmit={handleSubmit}>
-          <div className="grid grid-cols-2 gap-x-7 gap-y-5">
+          <div className="grid gap-5 md:grid-cols-2 md:gap-x-7">
             <div className="space-y-2">
               <Label className="text-xs text-[#5E6366]">Phone Number</Label>
 
@@ -92,7 +92,7 @@ export default function EditProfileForm() {
                 id="phone"
                 name="phone"
                 placeholder="Phone No."
-                className="h-[48px] rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
+                className="h-12 rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
               />
             </div>
 
@@ -103,14 +103,14 @@ export default function EditProfileForm() {
                 id="jobRole"
                 name="jobRole"
                 placeholder="Enter your niche.."
-                className="h-[48px] rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
+                className="h-12 rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
               />
             </div>
 
-            <div className="col-span-2 space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label className="text-xs text-[#5E6366]">Profile Image</Label>
 
-              <div className="flex items-center justify-between rounded-lg border p-4">
+              <div className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3">
                   <ImageUp className="h-5 w-5 text-blue-600" />
                   <span className="text-sm text-gray-600">
@@ -135,14 +135,14 @@ export default function EditProfileForm() {
               </div>
             </div>
 
-            <div className="col-span-2 space-y-2">
+            <div className="space-y-2 md:col-span-2">
               <Label className="text-xs text-[#5E6366]">Address</Label>
 
               <Input
                 id="address"
                 name="address"
                 placeholder="Enter your city and country name.."
-                className="h-[48px] rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
+                className="h-12 rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
               />
             </div>
           </div>
@@ -151,7 +151,7 @@ export default function EditProfileForm() {
             <Button
               type="submit"
               disabled={isPending}
-              className="h-[42px] w-[136px] rounded-xl bg-[#5570F1] text-base font-normal hover:bg-[#4863ea]"
+              className="h-10.5 w-full rounded-xl bg-[#5570F1] text-base font-normal hover:bg-[#4863ea] sm:w-34"
             >
               {isPending ? "Saving..." : "Save Changes"}
             </Button>

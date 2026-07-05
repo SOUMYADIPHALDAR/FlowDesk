@@ -11,41 +11,48 @@ import {
 import { LucideIcon } from "lucide-react";
 
 export type SidebarLinksProps = {
-    label: string;
-    href: string;
-    icon: LucideIcon;
-    adminOnly?: boolean;
-}
+  label: string;
+  href: string;
+  adminHref?: string;
+  icon: LucideIcon;
+  adminOnly?: boolean;
+};
 
-export const sidebarLinks : SidebarLinksProps[] = [
+export const sidebarLinks: SidebarLinksProps[] = [
   {
     label: "Dashboard",
     href: "/dashboard",
+    adminHref: "/admin/dashboard",
     icon: LayoutDashboard,
   },
   {
     label: "Projects",
     href: "/projects",
+    adminHref: "/admin/projects",
     icon: FolderKanban,
   },
   {
     label: "Tasks",
     href: "/tasks",
+    adminHref: "/admin/tasks",
     icon: ListTodo,
   },
   {
     label: "Work Logs",
     href: "/worklogs",
+    adminHref: "/admin/worklogs",
     icon: Logs,
   },
   {
     label: "Performance",
     href: "/performance",
+    adminHref: "/admin/performance",
     icon: TrendingUp,
   },
   {
     label: "Settings",
-    href: "/settings",
+    href: "/profile",
+    adminHref: "/admin/profile",
     icon: Settings,
   },
 

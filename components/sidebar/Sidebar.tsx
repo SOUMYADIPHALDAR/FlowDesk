@@ -19,14 +19,17 @@ export default function SidebarNav() {
       <nav className="flex-1 space-y-2 p-2 lg:p-4">
         {links.map((item) => {
           const Icon = item.icon;
+          const resolvedHref =
+            isAdmin && item.adminHref ? item.adminHref : item.href;
 
           const active =
-            pathname === item.href || pathname.startsWith(item.href + "/");
+            pathname === resolvedHref ||
+            pathname.startsWith(resolvedHref + "/");
 
           return (
             <Link
-              key={item.href}
-              href={item.href}
+              key={resolvedHref}
+              href={resolvedHref}
               className={cn(
                 "flex items-center rounded-xl py-3 transition-colors",
                 "justify-center lg:justify-start",

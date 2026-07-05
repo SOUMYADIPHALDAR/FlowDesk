@@ -53,11 +53,14 @@ model User {
   banReason     String?
   banExpires    DateTime?
 
-  projects Project[] @relation("ProjectOwner")
-  tasks    Task[]    @relation("TaskAssign")
-  comments Comment[] @relation("CommentAuthor")
-  sessions Session[]
-  accounts Account[]
+  ownedProjects Project[] @relation("ProjectOwner")
+  leadProjects  Project[] @relation("ProjectLeader")
+
+  projectsMembers ProjectMember[]
+  tasks           Task[]          @relation("TaskAssign")
+  comments        Comment[]       @relation("CommentAuthor")
+  sessions        Session[]
+  accounts        Account[]
 }
 
 model Session {
@@ -113,6 +116,7 @@ model Project {
   ownerId String
 
   name        String
+  leaderId    String
   description String?
   image       String?
   status      ProjectStatus @default(ACTIVE)
@@ -120,9 +124,25 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner User @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  owner  User @relation("ProjectOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  leader User @relation("ProjectLeader", fields: [leaderId], references: [id], onDelete: Cascade)
 
-  tasks Task[]
+  tasks   Task[]
+  members ProjectMember[]
+}
+
+model ProjectMember {
+  id String @id @default(uuid())
+
+  projectId String
+  userId    String
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([projectId, userId])
 }
 
 model Task {
