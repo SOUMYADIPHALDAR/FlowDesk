@@ -16,6 +16,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { X } from "lucide-react";
 import CreateProjectAction from "@/action/createProject.action";
+import { toast } from "sonner";
 
 interface User {
   id: string;
@@ -31,6 +32,7 @@ export default function CreateProjectForm() {
   const [leaderId, setLeaderId] = useState<string>("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [isPending, setIsPending] = useState(false);
 
   function addMember(user: User) {
     if (selectedMembers.some((member) => member.id === user.id)) return;
@@ -54,13 +56,30 @@ export default function CreateProjectForm() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setIsPending(true);
 
     const formData = new FormData(e.currentTarget);
 
     const projectName = String(formData.get("name"));
     const description = String(formData.get("description"));
 
-    
+    const data = {
+      projectName,
+      description,
+      startDate,
+      endDate,
+      leaderId,
+      memberIds: selectedMembers.map((member) => member.id),
+    };
+
+    const { error, result } = await CreateProjectAction(data);
+
+    if(error){
+      toast.error(error);
+      setIsPending(false);
+    } else {
+      toast.success("New project created successfully.")
+    }
   }
 
   return (
@@ -261,7 +280,11 @@ export default function CreateProjectForm() {
                 Cancel
               </Button>
 
-              <Button type="submit" className="rounded-xl bg-[#036EFF] px-8 py-6 text-base hover:bg-[#0257d6]">
+              <Button
+                type="submit"
+                disabled={isPending}
+                className="rounded-xl bg-[#036EFF] px-8 py-6 text-base hover:bg-[#0257d6]"
+              >
                 Save
               </Button>
             </div>

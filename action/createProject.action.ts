@@ -2,15 +2,9 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { ProjectSchema } from "@/lib/validations/projectSchema";
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
-
-interface Members {
-  id: string;
-  name: string;
-  email: string;
-  image?: string | null;
-}
 
 interface CreateProjectActionProps {
   projectName: string;
@@ -18,36 +12,28 @@ interface CreateProjectActionProps {
   startDate: string;
   endDate: string;
   leaderId: string;
-  selectMembers: Members[];
+  memberIds: string[];
 }
 
 export default async function CreateProjectAction(
   data: CreateProjectActionProps,
 ) {
+const validation = ProjectSchema.safeParse(data);
+
+if(!validation.success){
+  return {
+    error: validation.error.issues[0].message
+  }
+}
+
   const {
     projectName,
     description,
     startDate,
     endDate,
     leaderId,
-    selectMembers,
-  } = data;
-
-  if (!projectName && !startDate && !endDate && !leaderId) {
-    return { error: "Name, start date, end date and leader is required.." };
-  }
-
-  if (selectMembers.length === 0) {
-    return { error: "Choose team members.." };
-  }
-
-  const isLeaderSelected = selectMembers.some(
-    (member) => member.id === leaderId,
-  );
-
-  if (!isLeaderSelected) {
-    return { error: "Choose leader from your team members." };
-  }
+    memberIds,
+  } = validation.data;
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -66,7 +52,7 @@ export default async function CreateProjectAction(
         endDate,
         leaderId,
         members: {
-          create: selectMembers.map((member) => {
+          create: memberIds.map((member) => {
             return {
               userId: member.id,
             };
