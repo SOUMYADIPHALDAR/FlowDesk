@@ -14,9 +14,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
-import { X } from "lucide-react";
 import CreateProjectAction from "@/action/createProject.action";
 import { toast } from "sonner";
+import SearchUserAction from "@/action/searchUser.action";
 
 interface User {
   id: string;
@@ -27,7 +27,7 @@ interface User {
 
 export default function CreateProjectForm() {
   const [search, setSearch] = useState("");
-  const [searchResults, setSearchResults] = useState<User[]>([]);
+  const [searchResults, setSearchResults] = useState<User | null>(null);
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
   const [leaderId, setLeaderId] = useState<string>("");
   const [startDate, setStartDate] = useState("");
@@ -35,14 +35,14 @@ export default function CreateProjectForm() {
   const [isPending, setIsPending] = useState(false);
 
   function addMember(user: User) {
+    setIsPending(true);
     if (selectedMembers.some((member) => member.id === user.id)) return;
 
     const updatedMembers = [...selectedMembers, user];
     setSelectedMembers(updatedMembers);
-
-    if (!leaderId) {
-      setLeaderId(user.id);
-    }
+    toast.success("Member added successfullly..")
+    setIsPending(false);
+    setSearch("");
   }
 
   function removeMember(id: string) {
@@ -54,31 +54,44 @@ export default function CreateProjectForm() {
     }
   }
 
+  async function handleSearch() {
+    const { error, result } = await SearchUserAction(search);
+
+    if (error) {
+      toast.error(error);
+    } else {
+      setSearchResults(result ?? null);
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsPending(true);
 
     const formData = new FormData(e.currentTarget);
 
-    const projectName = String(formData.get("name"));
+    const projectName = String(formData.get("projectName"));
     const description = String(formData.get("description"));
+
+    console.log(projectName);
 
     const data = {
       projectName,
       description,
-      startDate,
-      endDate,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
       leaderId,
-      memberIds: selectedMembers.map((member) => member.id),
+      memberIds: selectedMembers.map((user) => user.id),
     };
 
-    const { error, result } = await CreateProjectAction(data);
+    const { error } = await CreateProjectAction(data);
 
-    if(error){
+    if (error) {
       toast.error(error);
       setIsPending(false);
     } else {
-      toast.success("New project created successfully.")
+      setIsPending(false);
+      toast.success("New project created successfully.");
     }
   }
 
@@ -145,105 +158,64 @@ export default function CreateProjectForm() {
             </div>
 
             {/* Team Members */}
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              {/* Search Members */}
-              <div>
-                <Label className="mb-2 block text-base font-semibold">
-                  Add Team Members
-                </Label>
+            <div>
+              <Label className="mb-2 block text-base font-semibold">
+                Add Team Members
+              </Label>
 
+              <div className="flex gap-2">
                 <Input
                   placeholder="Search by name or email..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
+                  className="flex-1"
                 />
 
-                <div className="mt-3 max-h-64 space-y-2 overflow-y-auto rounded-xl border bg-white p-3">
-                  {searchResults.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      No users found.
-                    </p>
-                  ) : (
-                    searchResults.map((user) => (
-                      <div
-                        key={user.id}
-                        className="flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={user.image ?? ""} />
-                            <AvatarFallback>
-                              {user.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-
-                          <div>
-                            <p className="font-medium">{user.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {user.email}
-                            </p>
-                          </div>
-                        </div>
-
-                        <Button
-                          size="sm"
-                          onClick={() => addMember(user)}
-                          disabled={selectedMembers.some(
-                            (member) => member.id === user.id,
-                          )}
-                        >
-                          Add
-                        </Button>
-                      </div>
-                    ))
-                  )}
-                </div>
+                <Button
+                  type="button"
+                  onClick={handleSearch}
+                  className="bg-[#036EFF] hover:bg-[#0257d6]"
+                >
+                  Search
+                </Button>
               </div>
 
-              {/* Selected Members */}
-              <div>
-                <Label className="mb-2 block text-base font-semibold">
-                  Selected Members
-                </Label>
+              <div className="mt-3 max-h-64 space-y-2 overflow-y-auto rounded-xl border bg-white p-3">
+                {!searchResults ? (
+                  <p className="text-sm text-muted-foreground">
+                    No users found.
+                  </p>
+                ) : (
+                  <div
+                    key={searchResults.id}
+                    className="flex items-center justify-between rounded-lg border p-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Avatar>
+                        <AvatarImage src={searchResults.image ?? ""} />
+                        <AvatarFallback>
+                          {searchResults.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
 
-                <div className="min-h-67.5 space-y-3 rounded-xl border bg-white p-3">
-                  {selectedMembers.length === 0 ? (
-                    <p className="text-sm text-muted-foreground">
-                      No members selected.
-                    </p>
-                  ) : (
-                    selectedMembers.map((member) => (
-                      <div
-                        key={member.id}
-                        className="flex items-center justify-between rounded-lg border p-3"
-                      >
-                        <div className="flex items-center gap-3">
-                          <Avatar>
-                            <AvatarImage src={member.image ?? ""} />
-                            <AvatarFallback>
-                              {member.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-
-                          <div>
-                            <p className="font-medium">{member.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {member.email}
-                            </p>
-                          </div>
-                        </div>
-
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeMember(member.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+                      <div>
+                        <p className="font-medium">{searchResults.name}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {searchResults.email}
+                        </p>
                       </div>
-                    ))
-                  )}
-                </div>
+                    </div>
+
+                    <Button
+                      size="sm"
+                      type="button"
+                      onClick={() => addMember(searchResults)}
+                      disabled={isPending}
+                    >
+                      Add
+                    </Button>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -263,7 +235,7 @@ export default function CreateProjectForm() {
 
                 <SelectContent>
                   {selectedMembers.map((member) => (
-                    <SelectItem key={member.id} value={member.id}>
+                    <SelectItem key={member.id} value={member.name}>
                       {member.name}
                     </SelectItem>
                   ))}

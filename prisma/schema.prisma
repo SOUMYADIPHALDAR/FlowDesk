@@ -41,7 +41,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name          String
+  name          String    @unique
   email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
@@ -118,8 +118,8 @@ model Project {
   name        String
   leaderId    String
   description String?
-  startDate   String
-  endDate     String
+  startDate   DateTime
+  endDate     DateTime
   image       String?
   status      ProjectStatus @default(ACTIVE)
 

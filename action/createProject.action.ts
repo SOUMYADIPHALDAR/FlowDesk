@@ -9,8 +9,8 @@ import { headers } from "next/headers";
 interface CreateProjectActionProps {
   projectName: string;
   description: string;
-  startDate: string;
-  endDate: string;
+  startDate: Date;
+  endDate: Date;
   leaderId: string;
   memberIds: string[];
 }
@@ -51,18 +51,25 @@ if(!validation.success){
         startDate,
         endDate,
         leaderId,
+        ownerId: session.user.id,
         members: {
-          create: memberIds.map((member) => {
+          create: memberIds.map((userId) => {
             return {
-              userId: member.id,
+              userId,
             };
           }),
         },
-        ownerId: session.user.id,
       },
+      include: {
+        members: {
+          include: {
+            user: true
+          }
+        }
+      }
     });
 
-    return { error: null, result };
+    return { error: null };
   } catch (err) {
     if (err instanceof APIError) {
       return { error: err.message };
