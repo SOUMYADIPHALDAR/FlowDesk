@@ -16,21 +16,32 @@ import { useState } from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
 import GetProjectAction from "@/action/getPorject.action";
-import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
-import { Command, CommandEmpty, CommandGroup, CommandList } from "./ui/command";
-import { Project, User } from "@/lib/generated/prisma/client";
+import type { Project, User } from "@/lib/generated/prisma/client";
 import SearchUserAction from "@/action/searchUser.action";
+import { APIError } from "better-auth";
+import CreateTaskAction from "@/action/createTask.action";
+import {
+  TASK_PRIORITIES,
+  TASK_STATUSES,
+  type TaskPriority,
+  type TaskStatus,
+} from "@/lib/constants/task";
+import { useRouter } from "next/navigation";
 
 export default function CreateTaskForm() {
-  const [status, setStatus] = useState("");
-  const [priority, setPriority] = useState("");
+  const [status, setStatus] = useState<TaskStatus>("PLANNING");
+  const [priority, setPriority] = useState<TaskPriority>("MEDIUM");
   const [projectName, setProjectName] = useState("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [ownerName, setOwnerName] = useState("");
   const [projectId, setProjectId] = useState("");
   const [userId, setUserId] = useState("");
+  const [endDate, setEndDate] = useState<Date | null>(null);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter()
 
   async function handleGetProject() {
     setLoading(true);
@@ -89,11 +100,44 @@ export default function CreateTaskForm() {
     }
   }
 
+  async function handleClick(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const data = {
+        projectId,
+        assigneeId: userId,
+        endDate,
+        title,
+        description,
+        status,
+        priority,
+      };
+
+      const { error } = await CreateTaskAction(data);
+
+      if (error) {
+        toast.error(error);
+      } else {
+        toast.success("Create task successfully..");
+        router.push("/admin/task");
+      }
+    } catch (err) {
+      if (err instanceof APIError) {
+        toast.error(err.message);
+      }
+      toast.error("Failed to create new task..");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 flex justify-center items-start p-10">
       <Card className="w-full max-w-7xl rounded-[15px] shadow-[0_3px_35px_rgba(0,0,0,0.08)] border-0">
         <CardContent className="p-10 space-y-8">
-          <form>
+          <form onSubmit={handleClick}>
             {/* Top Row */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
               {/* Project Name */}
@@ -194,31 +238,33 @@ export default function CreateTaskForm() {
               </div>
 
               {/* Dates */}
+
               <div className="lg:col-span-2 space-y-2">
                 <Label className="text-[22px] font-semibold text-[#333]">
-                  Start Date
+                  Due Date
                 </Label>
 
                 <Input
-                  id="startDate"
-                  name="startDate"
+                  value={endDate ? endDate.toISOString().split("T")[0] : ""}
+                  onChange={(e) => setEndDate(new Date(e.target.value))}
                   type="date"
                   className="h-[52px] rounded-[15px] border-[1.5px] border-[#DDDDDD]"
                 />
               </div>
+            </div>
 
-              <div className="lg:col-span-2 space-y-2">
-                <Label className="text-[22px] font-semibold text-[#333]">
-                  End Date
-                </Label>
+            {/* Title */}
+            <div className="space-y-2 mt-6">
+              <Label className="text-[22px] font-semibold text-[#333]">
+                Title
+              </Label>
 
-                <Input
-                  id="endDate"
-                  name="endDate"
-                  type="date"
-                  className="h-[52px] rounded-[15px] border-[1.5px] border-[#DDDDDD]"
-                />
-              </div>
+              <Input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                placeholder="Enter task title..."
+                className="h-[52px] rounded-[15px] border-[1.5px] border-[#DDDDDD]"
+              />
             </div>
 
             {/* Description */}
@@ -228,8 +274,8 @@ export default function CreateTaskForm() {
               </Label>
 
               <Textarea
-                id="description"
-                name="description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 placeholder="Enter project description..."
                 className="min-h-[106px] rounded-[15px] border-[1.5px] border-[#DDDDDD] resize-none"
               />
@@ -245,17 +291,18 @@ export default function CreateTaskForm() {
 
                 <Select
                   value={status}
-                  onValueChange={(value) => setStatus(value ?? "")}
+                  onValueChange={(value) => setStatus(value as TaskStatus)}
                 >
                   <SelectTrigger className="h-[52px] rounded-[12px] border border-[#D9D9D9]">
                     <SelectValue placeholder="Select Status" />
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="planning">Planning</SelectItem>
-                    <SelectItem value="active">Active</SelectItem>
-                    <SelectItem value="completed">Completed</SelectItem>
-                    <SelectItem value="onhold">On Hold</SelectItem>
+                    {TASK_STATUSES.map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {status}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -268,24 +315,18 @@ export default function CreateTaskForm() {
 
                 <Select
                   value={priority}
-                  onValueChange={(value) => setPriority(value ?? "")}
+                  onValueChange={(value) => setPriority(value as TaskPriority)}
                 >
                   <SelectTrigger className="h-[52px] rounded-[12px] border border-[#D9D9D9]">
                     <SelectValue placeholder="Select Priority" />
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="high">
-                      <span className="text-red-600 font-medium">High</span>
-                    </SelectItem>
-
-                    <SelectItem value="medium">
-                      <span className="text-amber-600 font-medium">Medium</span>
-                    </SelectItem>
-
-                    <SelectItem value="low">
-                      <span className="text-green-600 font-medium">Low</span>
-                    </SelectItem>
+                    {TASK_PRIORITIES.map((priority) => (
+                      <SelectItem key={priority} value={priority}>
+                        {priority}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -294,13 +335,19 @@ export default function CreateTaskForm() {
             {/* Buttons */}
             <div className="flex justify-end gap-4 pt-6">
               <Button
+                type="button"
+                disabled={loading}
                 variant="secondary"
                 className="h-14 px-8 rounded-[15px] bg-[#EEF4FB] text-[#036EFF] hover:bg-[#E3EEF9]"
               >
                 Cancel
               </Button>
 
-              <Button className="h-14 px-8 rounded-[15px] bg-[#036EFF] hover:bg-[#0358d4]">
+              <Button
+                type="submit"
+                disabled={loading}
+                className="h-14 px-8 rounded-[15px] bg-[#036EFF] hover:bg-[#0358d4]"
+              >
                 Save
               </Button>
             </div>

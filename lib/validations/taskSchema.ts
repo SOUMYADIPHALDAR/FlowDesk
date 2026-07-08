@@ -2,7 +2,7 @@ import { z } from "zod";
 import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
 
 export const TaskSchema = z.object({
-  projectId: z.string().uuid("Invalid project id."),
+  projectId: z.string().min(1, "Project id is required"),
   title: z.string().min(1, "Title is required."),
   description: z
     .string()
@@ -11,8 +11,8 @@ export const TaskSchema = z.object({
     .optional(),
   status: z.enum(TaskStatus).default("PLANNING"),
   priority: z.enum(TaskPriority).default("MEDIUM"),
-  assignedId: z.string().uuid("Invalid id.").nullable().optional(),
-  tagId: z.string().uuid("Invalid id.").nullable().optional(),
+  assigneeId: z.string().nullable().optional(),
+  tagId: z.string().nullable().optional(),
   dueDate: z.date().nullable().optional(),
 });
 

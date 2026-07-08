@@ -18,22 +18,16 @@ interface CreateProjectActionProps {
 export default async function CreateProjectAction(
   data: CreateProjectActionProps,
 ) {
-const validation = ProjectSchema.safeParse(data);
+  const validation = ProjectSchema.safeParse(data);
 
-if(!validation.success){
-  return {
-    error: validation.error.issues[0].message
+  if (!validation.success) {
+    return {
+      error: validation.error.issues[0].message,
+    };
   }
-}
 
-  const {
-    projectName,
-    description,
-    startDate,
-    endDate,
-    leaderId,
-    memberIds,
-  } = validation.data;
+  const { projectName, description, startDate, endDate, leaderId, memberIds } =
+    validation.data;
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -44,7 +38,7 @@ if(!validation.success){
   }
 
   try {
-    const result = await prisma.project.create({
+    await prisma.project.create({
       data: {
         name: projectName,
         description: description ?? "",
@@ -63,10 +57,10 @@ if(!validation.success){
       include: {
         members: {
           include: {
-            user: true
-          }
-        }
-      }
+            user: true,
+          },
+        },
+      },
     });
 
     return { error: null };
