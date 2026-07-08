@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { UserRole } from "../generated/prisma/enums";
+import { UserRole } from "@/lib/generated/prisma/enums";
 
 const UserSchema = z.object({
   name: z.string().trim().min(1, "Name is required."),

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TaskPriority, TaskStatus } from "../generated/prisma/enums";
+import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
 
 export const TaskSchema = z.object({
   projectId: z.string().uuid("Invalid project id."),
@@ -9,7 +9,7 @@ export const TaskSchema = z.object({
     .max(500, "Description must be with in 500 characters.")
     .nullable()
     .optional(),
-  status: z.enum(TaskStatus).default("TODO"),
+  status: z.enum(TaskStatus).default("PLANNING"),
   priority: z.enum(TaskPriority).default("MEDIUM"),
   assignedId: z.string().uuid("Invalid id.").nullable().optional(),
   tagId: z.string().uuid("Invalid id.").nullable().optional(),
