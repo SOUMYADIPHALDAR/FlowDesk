@@ -34,7 +34,6 @@ export default function TaskCard() {
       setLoading(true);
       try {
         const { error, result } = await FetchTasksAction();
-
         if (error) {
           toast.error(error);
           return;
@@ -75,22 +74,22 @@ export default function TaskCard() {
           </Button>
         </div>
       ) : (
-        <Card className="rounded-2xl border-0 shadow-sm transition hover:shadow-md">
-          <CardContent className="flex items-center justify-between gap-6 p-6">
-            {taskList.map((task) => (
-              <div
-                key={task.id}
-                className="flex items-center justify-between gap-6"
-              >
-                {/* Task */}
-                <div className="flex flex-1 items-start gap-5">
+        <div>
+          {taskList.map((task) => (
+            <Card
+              key={task.id}
+              className="mb-4 rounded-2xl shadow-sm transition hover:shadow-md"
+            >
+              <CardContent className="flex items-center justify-between p-6">
+                {/* Left Section */}
+                <div className="flex items-center gap-5">
                   <div className="rounded-xl bg-blue-100 p-3">
                     <Lightbulb className="h-6 w-6 text-blue-600" />
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <h3 className="text-base font-semibold">{task.title}</h3>
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h3 className="text-lg font-semibold">{task.title}</h3>
 
                       <Badge className={priorityStyles[task.priority]}>
                         {task.priority}
@@ -100,17 +99,25 @@ export default function TaskCard() {
                         {task.status.replace("_", " ")}
                       </Badge>
                     </div>
+
+                    {task.description && (
+                      <p className="mt-2 text-sm text-muted-foreground">
+                        {task.description}
+                      </p>
+                    )}
                   </div>
                 </div>
 
-                {/* Timer */}
-                <div className="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-2">
-                  <Clock3 className="h-5 w-5 text-green-600" />
+                {/* Right Section */}
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2 rounded-xl bg-green-50 px-4 py-2">
+                    <Clock3 className="h-5 w-5 text-green-600" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );

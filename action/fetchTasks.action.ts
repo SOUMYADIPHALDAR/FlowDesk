@@ -8,8 +8,8 @@ export default async function FetchTasksAction() {
   try {
     const result = await prisma.task.findMany({
       where: {
-        priority: TaskPriority.HIGH,
-        status: TaskStatus.IN_PROGRESS,
+        priority: TaskPriority.MEDIUM,
+        status: TaskStatus.PLANNING,
       },
       include: {
         assignee: {
