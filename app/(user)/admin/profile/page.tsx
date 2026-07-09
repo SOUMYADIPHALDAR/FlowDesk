@@ -1,4 +1,4 @@
-
+import BackButton from "@/components/back-button";
 import EditProfileForm from "@/components/edit-profile";
 import UserProfileCard from "@/components/profile-card";
 import ProjectsCard from "@/components/project-card";
@@ -9,7 +9,8 @@ export default function AdminProfile() {
     <div className="min-h-screen bg-[linear-gradient(135deg,#f8fbff_0%,#f3f7ff_100%)] p-4 sm:p-6 lg:p-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-6 rounded-[28px] border border-slate-200/70 bg-white/80 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:p-6 lg:p-8">
         <div className="flex flex-col gap-3 border-b border-slate-200 pb-5 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+          <div className="flext justify-center items-center gap-4">
+            <BackButton />
             <p className="text-sm font-medium uppercase tracking-[0.24em] text-[#5570F1]">
               Admin Workspace
             </p>

@@ -2,14 +2,13 @@
 
 import { Clock3, Lightbulb, MessageCircle, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
 import { Task } from "@/lib/generated/prisma/client";
 import { useEffect, useState } from "react";
 import FetchTasksAction from "@/action/fetchTasks.action";
 import { toast } from "sonner";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 const statusStyles: Record<TaskStatus, string> = {
@@ -78,9 +77,9 @@ export default function TaskCard() {
           {taskList.map((task) => (
             <Card
               key={task.id}
-              className="mb-4 rounded-2xl shadow-sm transition hover:shadow-md"
+              className="mb-4 rounded-2xl shadow-sm transition hover:shadow-md duration-300 hover:-translate-y-1"
             >
-              <CardContent className="flex items-center justify-between p-6">
+              <CardContent className="flex items-center justify-between p-6 cursor-pointer">
                 {/* Left Section */}
                 <div className="flex items-center gap-5">
                   <div className="rounded-xl bg-blue-100 p-3">

@@ -7,10 +7,6 @@ import { APIError } from "better-auth";
 export default async function FetchTasksAction() {
   try {
     const result = await prisma.task.findMany({
-      where: {
-        priority: TaskPriority.MEDIUM,
-        status: TaskStatus.PLANNING,
-      },
       include: {
         assignee: {
           select: {

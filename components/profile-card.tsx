@@ -4,16 +4,10 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/lib/auth-context";
 import { User, Phone, Mail, MapPin } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export default function UserProfileCard() {
   const { session } = useAuth();
-  const router = useRouter();
-
-  if (!session) {
-    router.push("/signin");
-  }
 
   const userName = session?.name ?? "Users";
   const initials =

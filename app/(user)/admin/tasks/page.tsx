@@ -31,16 +31,6 @@ export default function AdminTaskPage() {
                 Add Task
               </Link>
             </Button>
-
-            <Button variant="outline" className="h-11 rounded-xl px-6">
-              <Link
-                href="/admin/tasks/subtask"
-                className="flex items-center justify-center"
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Subtask
-              </Link>
-            </Button>
           </div>
         </div>
 

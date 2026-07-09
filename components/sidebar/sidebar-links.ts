@@ -38,12 +38,6 @@ export const sidebarLinks: SidebarLinksProps[] = [
     icon: ListTodo,
   },
   {
-    label: "Work Logs",
-    href: "/worklogs",
-    adminHref: "/admin/worklogs",
-    icon: Logs,
-  },
-  {
     label: "Performance",
     href: "/performance",
     adminHref: "/admin/performance",
