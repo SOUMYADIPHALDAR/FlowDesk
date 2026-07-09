@@ -40,9 +40,10 @@ export default function CreateProjectForm() {
 
     const updatedMembers = [...selectedMembers, user];
     setSelectedMembers(updatedMembers);
-    toast.success("Member added successfullly..")
+    toast.success("Member added successfullly..");
     setIsPending(false);
     setSearch("");
+    setSearchResults(null);
   }
 
   function removeMember(id: string) {
@@ -56,7 +57,6 @@ export default function CreateProjectForm() {
 
   async function handleSearch() {
     const { error, result } = await SearchUserAction(search);
-
     if (error) {
       toast.error(error);
     } else {
@@ -180,42 +180,96 @@ export default function CreateProjectForm() {
                 </Button>
               </div>
 
-              <div className="mt-3 max-h-64 space-y-2 overflow-y-auto rounded-xl border bg-white p-3">
-                {!searchResults ? (
-                  <p className="text-sm text-muted-foreground">
-                    No users found.
-                  </p>
-                ) : (
-                  <div
-                    key={searchResults.id}
-                    className="flex items-center justify-between rounded-lg border p-3"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={searchResults.image ?? ""} />
-                        <AvatarFallback>
-                          {searchResults.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
+              <div className="mt-3 space-y-6">
+                {/* Search Result */}
+                {searchResults && (
+                  <div>
+                    <Label className="mb-3 block text-base font-semibold">
+                      Search Result
+                    </Label>
 
-                      <div>
-                        <p className="font-medium">{searchResults.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {searchResults.email}
-                        </p>
+                    <div className="rounded-xl border bg-white p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <Avatar>
+                            <AvatarImage src={searchResults.image ?? ""} />
+                            <AvatarFallback>
+                              {searchResults.name.charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+
+                          <div>
+                            <p className="font-medium">{searchResults.name}</p>
+                            <p className="text-sm text-muted-foreground">
+                              {searchResults.email}
+                            </p>
+                          </div>
+                        </div>
+
+                        <Button
+                          type="button"
+                          onClick={() => addMember(searchResults)}
+                          disabled={selectedMembers.some(
+                            (member) => member.id === searchResults.id,
+                          )}
+                        >
+                          {selectedMembers.some(
+                            (member) => member.id === searchResults.id,
+                          )
+                            ? "Added"
+                            : "Add"}
+                        </Button>
                       </div>
                     </div>
-
-                    <Button
-                      size="sm"
-                      type="button"
-                      onClick={() => addMember(searchResults)}
-                      disabled={isPending}
-                    >
-                      Add
-                    </Button>
                   </div>
                 )}
+
+                {/* Selected Members */}
+                <div>
+                  <Label className="mb-3 block text-base font-semibold">
+                    Selected Members ({selectedMembers.length})
+                  </Label>
+
+                  <div className="max-h-64 space-y-3 overflow-y-auto rounded-xl border bg-white p-4">
+                    {selectedMembers.length === 0 ? (
+                      <p className="text-sm text-muted-foreground">
+                        No members selected.
+                      </p>
+                    ) : (
+                      selectedMembers.map((member) => (
+                        <div
+                          key={member.id}
+                          className="flex items-center justify-between rounded-lg border p-3"
+                        >
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarImage src={member.image ?? ""} />
+                              <AvatarFallback>
+                                {member.name.charAt(0)}
+                              </AvatarFallback>
+                            </Avatar>
+
+                            <div>
+                              <p className="font-medium">{member.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {member.email}
+                              </p>
+                            </div>
+                          </div>
+
+                          <Button
+                            type="button"
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => removeMember(member.id)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
 
