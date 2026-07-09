@@ -1,9 +1,11 @@
 "use server";
 
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
+import { headers } from "next/headers";
 
-export default async function GetProjectAction(name: string) {
+export async function GetOneProjectAction(name: string) {
   try {
     if (!name) {
       return { error: "Enter a valid name." };
@@ -21,5 +23,30 @@ export default async function GetProjectAction(name: string) {
       return { error: err.message };
     }
     return { error: "Internal server error" };
+  }
+}
+
+export async function GetManyProjectsAction() {
+  try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user?.id) {
+      return { error: "Unauthorized access.." };
+    }
+
+    const result = await prisma.project.findMany({
+      where: {
+        ownerId: session.user.id,
+      },
+    });
+
+    return { error: null, result };
+  } catch (err) {
+    if (err instanceof APIError) {
+      return { error: err.message };
+    }
+    return { error: "Internal server error." };
   }
 }

@@ -15,7 +15,7 @@ import {
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { toast } from "sonner";
-import GetProjectAction from "@/action/getPorject.action";
+import { GetOneProjectAction } from "@/action/getPorject.action";
 import type { Project, User } from "@/lib/generated/prisma/client";
 import SearchUserAction from "@/action/searchUser.action";
 import { APIError } from "better-auth";
@@ -41,7 +41,7 @@ export default function CreateTaskForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter()
+  const router = useRouter();
 
   async function handleGetProject() {
     setLoading(true);
@@ -53,7 +53,7 @@ export default function CreateTaskForm() {
     }
 
     try {
-      const { error, result } = await GetProjectAction(projectName);
+      const { error, result } = await GetOneProjectAction(projectName);
 
       if (error) {
         toast.error(error);
