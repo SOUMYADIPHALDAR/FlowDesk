@@ -42,17 +42,27 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  name          String    @unique
-  email         String    @unique
-  emailVerified Boolean   @default(false)
-  image         String?
-  address       String?
-  phone         String?
-  jobRole       String?
-  role          UserRole  @default(USER)
-  banned        Boolean?  @default(false)
-  banReason     String?
-  banExpires    DateTime?
+  employeeId String? @unique
+
+  name          String
+  email         String  @unique
+  emailVerified Boolean @default(false)
+
+  image       String?
+  address     String?
+  phone       String?
+  designation     String?
+  department      String?
+  joiningDate DateTime?
+
+  role UserRole @default(USER)
+
+  invitationToken   String?
+  invitationExpires DateTime?
+
+  banned     Boolean?  @default(false)
+  banReason  String?
+  banExpires DateTime?
 
   ownedProjects Project[] @relation("ProjectOwner")
   leadProjects  Project[] @relation("ProjectLeader")
@@ -116,7 +126,7 @@ model Project {
   id      String @id @default(cuid())
   ownerId String
 
-  name        String   @unique
+  name        String        @unique
   leaderId    String
   description String?
   startDate   DateTime

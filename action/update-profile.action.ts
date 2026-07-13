@@ -2,10 +2,12 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { UpdateUserSchema } from "@/lib/validations/updateUserSchema";
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
 
 interface UpdateProfileProps {
+  name?: string;
   phone?: string;
   jobRole?: string;
   address?: string;
@@ -14,6 +16,12 @@ interface UpdateProfileProps {
 
 export default async function UpdateProfileAction(data: UpdateProfileProps) {
   try {
+    const validation = UpdateUserSchema.safeParse(data);
+    if (!validation.success) {
+      return { error: validation.error.issues[0].message };
+    }
+
+    const { name, phone, jobRole, address, image } = validation.data;
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -25,10 +33,11 @@ export default async function UpdateProfileAction(data: UpdateProfileProps) {
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
-        phone: data.phone || undefined,
-        jobRole: data.jobRole || undefined,
-        address: data.address || undefined,
-        image: data.image || undefined,
+        name: name || undefined,
+        phone: phone || undefined,
+        jobRole: jobRole || undefined,
+        address: address || undefined,
+        image: image || undefined,
       },
     });
 

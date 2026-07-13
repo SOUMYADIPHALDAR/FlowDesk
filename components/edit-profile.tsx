@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import { ImageUp } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import UpdateProfileAction from "@/action/update-profile.action";
@@ -13,8 +14,46 @@ import { useAuth } from "@/lib/auth-context";
 
 export default function EditProfileForm() {
   const [isPending, setIsPending] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
   const router = useRouter();
   const { setSession } = useAuth();
+
+  useEffect(() => {
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
+
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+
+    if (!file) return;
+
+    if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+      toast.error("Choose a JPG, PNG, or WebP image");
+      event.target.value = "";
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be 5 MB or smaller");
+      event.target.value = "";
+      return;
+    }
+
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    previewUrlRef.current = nextPreviewUrl;
+    setSelectedFile(file);
+    setPreviewUrl(nextPreviewUrl);
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,35 +61,38 @@ export default function EditProfileForm() {
 
     try {
       const formData = new FormData(e.currentTarget);
-      const fileInput = formData.get("file") as File | null;
 
       let image = "";
-      let uploadResponse = "";
 
       // Only upload if a file is selected
-      if (fileInput && fileInput.size > 0) {
+      if (selectedFile) {
         const uploadFormData = new FormData();
-        uploadFormData.append("file", fileInput);
+        uploadFormData.append("file", selectedFile);
 
-        const uploadResponse = await fetch("/api/upload", {
+        const response = await fetch("/api/upload", {
           method: "POST",
           body: uploadFormData,
-        }).then((res) => res.json());
+        });
+        const uploadResponse = (await response.json()) as {
+          error?: string;
+          url?: string;
+        };
 
-        if (uploadResponse.error) {
-          toast.error(uploadResponse.error);
-          setIsPending(false);
+        if (!response.ok || !uploadResponse.url) {
+          toast.error(uploadResponse.error ?? "Image upload failed");
           return;
         }
 
-        image = uploadResponse?.url || "";
+        image = uploadResponse.url;
       }
 
+      const name = String(formData.get("name"));
       const phone = String(formData.get("phone"));
       const jobRole = String(formData.get("jobRole"));
       const address = String(formData.get("address"));
 
       const result = await UpdateProfileAction({
+        name,
         phone,
         jobRole,
         address,
@@ -67,7 +109,7 @@ export default function EditProfileForm() {
         toast.success("Profile updated successfully..");
         router.refresh();
       }
-    } catch (error) {
+    } catch {
       toast.error("Failed to update profile");
     } finally {
       setIsPending(false);
@@ -85,6 +127,17 @@ export default function EditProfileForm() {
       <CardContent className="space-y-5">
         <form onSubmit={handleSubmit}>
           <div className="grid gap-5 md:grid-cols-2 md:gap-x-7">
+            <div className="space-y-2">
+              <Label className="text-xs text-[#5E6366]">Name</Label>
+
+              <Input
+                id="name"
+                name="name"
+                placeholder="Enter your name"
+                className="h-12 rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
+              />
+            </div>
+
             <div className="space-y-2">
               <Label className="text-xs text-[#5E6366]">Phone Number</Label>
 
@@ -122,16 +175,32 @@ export default function EditProfileForm() {
                   id="profileImage"
                   name="file"
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/png,image/webp"
                   className="hidden"
+                  onChange={handleImageChange}
                 />
 
                 <label
                   htmlFor="profileImage"
                   className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
                 >
-                  Upload
+                  {selectedFile ? "Change image" : "Choose image"}
                 </label>
+
+                {selectedFile && (
+                  <p className="text-xs text-muted-foreground">
+                    {selectedFile.name}
+                  </p>
+                )}
+
+                {previewUrl && (
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage
+                      src={previewUrl}
+                      alt="Selected profile image preview"
+                    />
+                  </Avatar>
+                )}
               </div>
             </div>
 
