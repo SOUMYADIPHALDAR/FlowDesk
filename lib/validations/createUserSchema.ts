@@ -36,7 +36,7 @@ export const CreateUserSchema = z.object({
     error: "Joining date is required.",
   }),
 
-  role: z.enum(UserRole),
+  role: z.enum(UserRole).default(UserRole.USER),
 });
 
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
