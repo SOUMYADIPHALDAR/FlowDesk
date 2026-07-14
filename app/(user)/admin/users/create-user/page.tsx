@@ -1,7 +1,9 @@
+
 import BackButton from "@/components/back-button";
 import CreateUserForm from "@/components/createUser-form";
 
 export default function CreateUserPage() {
+
   return (
     <main className="min-h-screen bg-[linear-gradient(135deg,#f8fbff_0%,#f3f7ff_100%)] p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-5xl">

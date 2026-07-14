@@ -1,5 +1,8 @@
 "use server";
 
+import { GenerateEmployeeId } from "@/lib/employee/generateEmployeeId";
+import { generateInvitationToken } from "@/lib/employee/generateInvitationToken";
+import { sendEmail } from "@/lib/employee/sendEmail";
 import prisma from "@/lib/prisma";
 import { CreateUserSchema } from "@/lib/validations/createUserSchema";
 import { APIError } from "better-auth";
@@ -25,7 +28,24 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
     const { name, email, joiningDate, phone, designation, department } =
       validation.data;
 
-    await prisma.user.create({
+    const existingUser = await prisma.user.findUnique({
+      where: { 
+        email,
+        role: "USER"
+      },
+    });
+
+    if (existingUser) {
+      return {
+        error: "A user already exists with this email.",
+      };
+    }
+
+    const employeeId = await GenerateEmployeeId();
+    const invitationToken = generateInvitationToken();
+    const invitationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    const user = await prisma.user.create({
       data: {
         name,
         email,
@@ -33,7 +53,22 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
         phone,
         department,
         designation,
+
+        employeeId,
+        invitationToken,
+        invitationExpires
       },
+    });
+
+    const activationLink = `http://localhost:3000/activate?token=${invitationToken}`;
+
+    await sendEmail({
+      email: user.email,
+      employeeName: user.name,
+      employeeId,
+      designation,
+      department,
+      activationLink,
     });
 
     return { error: null };
