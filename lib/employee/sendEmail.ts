@@ -1,4 +1,4 @@
-import { transporter } from "@/lib/employee/email";
+import { getTransporter } from "@/lib/employee/email";
 
 interface sendEmailActionProps {
     email: string;
@@ -6,11 +6,12 @@ interface sendEmailActionProps {
     employeeId: string;
     designation: string;
     department: string;
+    joiningDate: Date;
     activationLink: string;
 }
 
 export async function sendEmail({email, employeeName, employeeId, designation, department, activationLink}: sendEmailActionProps) {
-  await transporter.sendMail({
+  await getTransporter().sendMail({
     from: `"FlowDesk" <${process.env.EMAIL_USER}>`,
     to: email,
     subject: "Welcome to Flowdesk",

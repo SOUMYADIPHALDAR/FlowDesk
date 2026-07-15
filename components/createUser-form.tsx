@@ -43,11 +43,14 @@ export default function CreateUserForm() {
         department
       }
 
-      const { error} = await CreateUserAction(data);
+      const { error, warning } = await CreateUserAction(data);
       if(error){
         toast.error(error);
       } else {
         toast.success("New User created successfully..");
+        if (warning) {
+          toast.warning(warning);
+        }
         setName("");
         setEmail("");
         setNumber("");

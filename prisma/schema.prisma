@@ -57,7 +57,7 @@ model User {
 
   role UserRole @default(USER)
 
-  invitationToken   String?
+  invitationToken   String?  @unique
   invitationExpires DateTime?
 
   banned     Boolean?  @default(false)

@@ -3,21 +3,32 @@
 import { GenerateEmployeeId } from "@/lib/employee/generateEmployeeId";
 import { generateInvitationToken } from "@/lib/employee/generateInvitationToken";
 import { sendEmail } from "@/lib/employee/sendEmail";
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { CreateUserSchema } from "@/lib/validations/createUserSchema";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { APIError } from "better-auth";
+import { headers } from "next/headers";
 
 interface CreateUserActionProps {
   name: string;
   email: string;
   joiningDate: Date;
-  phone: string;
+  phone?: string;
   designation: string;
   department: string;
 }
 
 export default async function CreateUserAction(data: CreateUserActionProps) {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user || session.user.role !== "ADMIN") {
+      return { error: "Only administrators can create users." };
+    }
+
     const validation = CreateUserSchema.safeParse(data);
     if (!validation.success) {
       return {
@@ -29,9 +40,8 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
       validation.data;
 
     const existingUser = await prisma.user.findUnique({
-      where: { 
+      where: {
         email,
-        role: "USER"
       },
     });
 
@@ -45,37 +55,56 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
     const invitationToken = generateInvitationToken();
     const invitationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-    const user = await prisma.user.create({
+   await auth.api.createUser({
+    body: {
+      name,
+      email,
       data: {
-        name,
-        email,
-        joiningDate,
         phone,
-        department,
-        designation,
-
         employeeId,
+        designation,
+        department,
+        joiningDate,
         invitationToken,
         invitationExpires
-      },
-    });
+      }
+    }
+   })
 
-    const activationLink = `http://localhost:3000/activate?token=${invitationToken}`;
+    const appUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
+    const activationLink = `${appUrl.replace(/\/$/, "")}/activate?token=${invitationToken}`;
 
-    await sendEmail({
-      email: user.email,
-      employeeName: user.name,
-      employeeId,
-      designation,
-      department,
-      activationLink,
-    });
+    try {
+      await sendEmail({
+        email,
+        employeeName: name,
+        employeeId,
+        joiningDate,
+        designation,
+        department,
+        activationLink,
+      });
+    } catch (error) {
+      console.error("Invitation email delivery failed:", error);
+      return {
+        error: null,
+        warning:
+          "User was created, but the invitation email could not be sent. Check the email settings and resend the invitation.",
+      };
+    }
 
     return { error: null };
   } catch (err) {
+    if (
+      err instanceof Prisma.PrismaClientKnownRequestError &&
+      err.code === "P2002"
+    ) {
+      return { error: "A user already exists with this email or employee ID." };
+    }
     if (err instanceof APIError) {
       return { error: err.message };
     }
+    console.error("Unable to create user:", err);
     return { error: "Internal server error" };
   }
 }
