@@ -60,6 +60,7 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
       name,
       email,
       employeeId,
+      phone,
       designation,
       department,
       joiningDate,

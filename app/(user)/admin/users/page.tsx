@@ -1,4 +1,5 @@
 import BackButton from "@/components/back-button";
+import UserCard from "@/components/user-card";
 
 import { UserPlus, UsersRound } from "lucide-react";
 import Link from "next/link";
@@ -42,6 +43,8 @@ export default function Users() {
               Add a user to start building and managing your workspace team.
             </p>
           </div>
+
+          <UserCard />
         </section>
       </div>
     </main>
