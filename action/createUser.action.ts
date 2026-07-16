@@ -55,19 +55,18 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
     const invitationToken = generateInvitationToken();
     const invitationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-   await auth.api.createUser({
-    body: {
+   await prisma.user.create({
+    data: {
       name,
       email,
-      data: {
-        phone,
-        employeeId,
-        designation,
-        department,
-        joiningDate,
-        invitationToken,
-        invitationExpires
-      }
+      employeeId,
+      designation,
+      department,
+      joiningDate,
+      invitationToken,
+      invitationExpires,
+      role: "USER",
+      emailVerified: false
     }
    })
 
