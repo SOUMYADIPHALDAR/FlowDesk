@@ -9,7 +9,7 @@ import { headers } from "next/headers";
 interface UpdateProfileProps {
   name?: string;
   phone?: string;
-  jobRole?: string;
+  designation?: string;
   address?: string;
   image?: string;
 }
@@ -21,7 +21,7 @@ export default async function UpdateProfileAction(data: UpdateProfileProps) {
       return { error: validation.error.issues[0].message };
     }
 
-    const { name, phone, jobRole, address, image } = validation.data;
+    const { name, phone, designation, address, image } = validation.data;
     const session = await auth.api.getSession({
       headers: await headers(),
     });
@@ -35,7 +35,7 @@ export default async function UpdateProfileAction(data: UpdateProfileProps) {
       data: {
         name: name || undefined,
         phone: phone || undefined,
-        jobRole: jobRole || undefined,
+        designation: designation || undefined,
         address: address || undefined,
         image: image || undefined,
       },

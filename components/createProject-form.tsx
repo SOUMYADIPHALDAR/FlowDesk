@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CreateProjectAction from "@/action/createProject.action";
 import { toast } from "sonner";
 import SearchUserAction from "@/action/searchUser.action";
+import { ImageUp } from "lucide-react";
 
 interface User {
   id: string;
@@ -30,9 +31,47 @@ export default function CreateProjectForm() {
   const [searchResults, setSearchResults] = useState<User | null>(null);
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
   const [leaderId, setLeaderId] = useState<string>("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const previewUrlRef = useRef<string | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isPending, setIsPending] = useState(false);
+
+   useEffect(() => {
+      return () => {
+        if (previewUrlRef.current) {
+          URL.revokeObjectURL(previewUrlRef.current);
+        }
+      };
+    }, []);
+  
+    function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+      const file = event.target.files?.[0] ?? null;
+  
+      if (!file) return;
+  
+      if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+        toast.error("Choose a JPG, PNG, or WebP image");
+        event.target.value = "";
+        return;
+      }
+  
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image must be 5 MB or smaller");
+        event.target.value = "";
+        return;
+      }
+  
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+  
+      const nextPreviewUrl = URL.createObjectURL(file);
+      previewUrlRef.current = nextPreviewUrl;
+      setSelectedFile(file);
+      setPreviewUrl(nextPreviewUrl);
+    }
 
   function addMember(user: User) {
     setIsPending(true);
@@ -101,6 +140,50 @@ export default function CreateProjectForm() {
         <CardContent className="space-y-8 p-8">
           <form onSubmit={handleSubmit}>
             {/* Top Row */}
+            <div className="space-y-2 md:col-span-2">
+              <Label className="text-xs text-[#5E6366]">Profile Image</Label>
+
+              <div className="flex flex-col gap-3 rounded-lg border p-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-3">
+                  <ImageUp className="h-5 w-5 text-blue-600" />
+                  <span className="text-sm text-gray-600">
+                    Change profile image
+                  </span>
+                </div>
+
+                <input
+                  id="profileImage"
+                  name="file"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+
+                <label
+                  htmlFor="profileImage"
+                  className="cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm text-white hover:bg-blue-700"
+                >
+                  {selectedFile ? "Change image" : "Choose image"}
+                </label>
+
+                {selectedFile && (
+                  <p className="text-xs text-muted-foreground">
+                    {selectedFile.name}
+                  </p>
+                )}
+
+                {previewUrl && (
+                  <Avatar className="h-16 w-16">
+                    <AvatarImage
+                      src={previewUrl}
+                      alt="Selected profile image preview"
+                    />
+                  </Avatar>
+                )}
+              </div>
+            </div>
+
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-4">
               <div className="lg:col-span-1">
                 <Label className="mb-2 block text-base font-semibold">

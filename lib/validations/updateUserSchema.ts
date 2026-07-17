@@ -27,7 +27,7 @@ export const UpdateUserSchema = z.object({
     .optional()
     .or(z.literal("")),
 
-  jobRole: z
+  designation: z
     .string()
     .trim()
     .max(50, "Job role cannot exceed 50 characters.")

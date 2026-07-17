@@ -43,6 +43,7 @@ export default function UserProfileCard() {
           setUser(null);
           return;
         }
+        console.log(result);
         setUser(result);
       } catch (err) {
         if(err instanceof Error){
@@ -87,7 +88,7 @@ export default function UserProfileCard() {
               <div className="flex items-center gap-3">
                 <UserRound className="h-5 w-5 shrink-0 text-[#4B4B4B]" />
                 <span className="text-sm text-[#4B4B4B] sm:text-[16px]">
-                  {user.jobRole}
+                  {user.designation}
                 </span>
               </div>
             </div>

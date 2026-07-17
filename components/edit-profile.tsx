@@ -88,13 +88,13 @@ export default function EditProfileForm() {
 
       const name = String(formData.get("name"));
       const phone = String(formData.get("phone"));
-      const jobRole = String(formData.get("jobRole"));
+      const designation = String(formData.get("designation"));
       const address = String(formData.get("address"));
 
       const result = await UpdateProfileAction({
         name,
         phone,
-        jobRole,
+        designation,
         address,
         image,
       });
@@ -153,8 +153,8 @@ export default function EditProfileForm() {
               <Label className="text-xs text-[#5E6366]">Job Role</Label>
 
               <Input
-                id="jobRole"
-                name="jobRole"
+                id="designation"
+                name="designation"
                 placeholder="Enter your niche.."
                 className="h-12 rounded-lg border-[#CFD3D5] px-3 text-sm placeholder:text-[#ABAFB1]"
               />
