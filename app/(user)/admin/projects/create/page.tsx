@@ -9,11 +9,11 @@ export default function AdminPerformancePage() {
 
         <BackButton />
         <h1 className="text-3xl font-bold tracking-tight text-slate-900">
-          Admin Performance
+          Create Project
         </h1>
 
         <p className="mt-2 text-sm text-slate-500">
-          Create and manage performance records for administrators.
+          Create and Manage Projects for Administrators.
         </p>
       </div>
 

@@ -1,80 +1,144 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
+import Link from "next/link";
+import {
+  CalendarDays,
+  Users,
+  UserRound,
+  CheckCircle2,
+  Clock3,
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { ProjectStatus } from "@/lib/generated/prisma/enums";
+import { useState } from "react";
+import Loading from "./loading";
 import { Project } from "@/lib/generated/prisma/client";
-import { GetManyProjectsAction } from "@/action/getPorject.action";
-import { toast } from "sonner";
 
-export default function ProjectsCard() {
-  const [projectList, setProjectList] = useState<Project[]>([]);
+interface ProjectCardProps {
+  id: string;
+  name: string;
+  description: string;
+  status: ProjectStatus;
+
+  leader: {
+    name: string;
+  };
+
+  membersCount: number;
+
+  totalTasks: number;
+  completedTasks: number;
+
+  startDate: Date;
+  endDate: Date;
+}
+
+export default function ProjectCard({
+  id,
+  name,
+  description,
+  status,
+  leader,
+  membersCount,
+  totalTasks,
+  completedTasks,
+  startDate,
+  endDate,
+}: ProjectCardProps) {
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  const [projectList, setProjectList] = useState<ProjectCardProps[]>([]);
 
-  useEffect(() => {
-    async function fetchProjects() {
-      setLoading(true);
-      try {
-        const { error, result } = await GetManyProjectsAction();
-        if (error) {
-          toast.error(error);
-          return;
-        }
-
-        if (!result) {
-          toast.error("No Projects found.");
-          return;
-        }
-
-        setProjectList(result);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchProjects();
-  }, []);
+  const progress =
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
   return (
-    <Card className="w-full rounded-[20px] border-0 bg-[#FDFEFF] shadow-md">
-      <CardContent className="p-4 sm:p-6 lg:p-8">
-        {/* Header */}
-        <div className="mb-6 flex flex-col gap-3 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
-          <h2 className="text-[20px] font-bold text-[#4B4B4B]">Projects</h2>
-
-          <Button
-            variant="ghost"
-            onClick={() => router.push("/admin/projects")}
-            className="h-auto p-0 text-[17px] font-bold text-[#ED2590] cursor-pointer hover:bg-transparent hover:text-[#ED2590]"
-          >
-            View all
-          </Button>
-        </div>
-
-        {/* Projects Grid */}
-        <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-8 lg:gap-x-8 lg:gap-y-10">
+    <div>
+      {loading ? (
+        <Loading />
+      ) : (
+        <div>
           {projectList.map((project) => (
-            <div key={project.id} className="flex flex-col items-center cursor-pointer">
-              {project.image ? (
-                <img
-                  src={project.image}
-                  alt={project.name}
-                  className="h-20 w-20 rounded-[10px] object-cover sm:h-24 sm:w-24"
-                />
-              ) : (
-                <div className="flex h-20 w-20 items-center justify-center rounded-[10px] bg-slate-100 text-center text-sm text-slate-500 sm:h-24 sm:w-24">
-                  No image
-                </div>
-              )}
+            <Card className="rounded-2xl transition-all hover:-translate-y-1 hover:shadow-lg">
+              <CardHeader className="space-y-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <h2 className="text-lg font-semibold">{name}</h2>
 
-              <p className="mt-3 w-full max-w-24 text-center text-sm leading-5 tracking-[0.2px] text-[#4B4B4B]">
-                {project.name}
-              </p>
-            </div>
+                    <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
+                      {description}
+                    </p>
+                  </div>
+
+                  <Badge>{status.replace("_", " ")}</Badge>
+                </div>
+              </CardHeader>
+
+              <CardContent className="space-y-5">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span>Progress</span>
+
+                    <span>{progress}%</span>
+                  </div>
+
+                  <Progress value={progress} />
+                </div>
+
+                <div className="grid gap-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <UserRound className="h-4 w-4 text-muted-foreground" />
+                    <span>{leader.name}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Users className="h-4 w-4 text-muted-foreground" />
+                    <span>{membersCount} Members</span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {completedTasks} / {totalTasks} Tasks Completed
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                    <span>
+                      {startDate.toLocaleDateString()} -{" "}
+                      {endDate.toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Clock3 className="h-4 w-4 text-muted-foreground" />
+                    <span>Deadline: {endDate.toLocaleDateString()}</span>
+                  </div>
+                </div>
+              </CardContent>
+
+              <CardFooter className="flex justify-end gap-2">
+                <Button variant="outline">
+                  <Link href={`/admin/projects/${id}`}>View</Link>
+                </Button>
+
+                <Button variant="secondary">Edit</Button>
+
+                <Button variant="destructive">Delete</Button>
+              </CardFooter>
+            </Card>
           ))}
         </div>
-      </CardContent>
-    </Card>
+      )}
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import BackButton from "@/components/back-button";
 import EditProfileForm from "@/components/edit-profile";
 import UserProfileCard from "@/components/profile-card";
-import ProjectsCard from "@/components/project-card";
+import ProjectsCard from "@/components/profile-project-card";
 import SignOutButton from "@/components/sign-out-button";
 
 export default function AdminProfile() {

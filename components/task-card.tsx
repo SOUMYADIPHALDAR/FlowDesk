@@ -8,10 +8,9 @@ import { Prisma} from "@/lib/generated/prisma/client";
 import { useEffect, useState } from "react";
 import FetchTasksAction from "@/action/fetchTasks.action";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import Loading from "@/components/loading";
 
 const statusStyles: Record<TaskStatus, string> = {
   PLANNING: "bg-yellow-100 text-yellow-700",
@@ -72,23 +71,7 @@ export default function TaskCard() {
   return (
     <div>
       {loading ? (
-        <div className="flex h-80 flex-col items-center justify-center rounded-2xl border border-dashed bg-white">
-          <h3 className="text-xl font-semibold">No Tasks Found</h3>
-
-          <p className="mt-2 text-sm text-muted-foreground">
-            Create your first task to start managing your team.
-          </p>
-
-          <Button className="mt-6 rounded-xl">
-            <Link
-              href="/admin/tasks/create"
-              className="flex justify-center items-center"
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Create Task
-            </Link>
-          </Button>
-        </div>
+        <Loading />
       ) : (
         <div>
           {taskList.map((task) => (

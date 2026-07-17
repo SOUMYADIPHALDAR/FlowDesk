@@ -2,9 +2,7 @@ import {
   FolderKanban,
   LayoutDashboard,
   ListTodo,
-  Logs,
   Settings,
-  TrendingUp,
   Users,
   BarChart3,
 } from "lucide-react";
@@ -36,12 +34,6 @@ export const sidebarLinks: SidebarLinksProps[] = [
     href: "/tasks",
     adminHref: "/admin/tasks",
     icon: ListTodo,
-  },
-  {
-    label: "Performance",
-    href: "/performance",
-    adminHref: "/admin/performance",
-    icon: TrendingUp,
   },
   {
     label: "Settings",
