@@ -40,6 +40,23 @@ export async function GetManyProjectsAction() {
       where: {
         ownerId: session.user.id,
       },
+      include: {
+        leader: {
+          select: {
+            name: true,
+          },
+        },
+        members: {
+          select: {
+            id: true,
+          },
+        },
+        tasks: {
+          select: {
+            status: true,
+          },
+        },
+      },
     });
 
     return { error: null, result };
