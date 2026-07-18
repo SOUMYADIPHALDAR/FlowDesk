@@ -8,20 +8,12 @@ import { UserRole } from "@/lib/generated/prisma/enums";
 import { useEffect, useState } from "react";
 import { GetAllUser } from "@/action/getUser.action";
 import { toast } from "sonner";
-import { join } from "path";
 import { Card, CardContent } from "./ui/card";
 import { Skeleton } from "./ui/skeleton";
+import { User } from "@/lib/generated/prisma/client";
 
 export default function UserCard() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [image, setImage] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [department, setDepartment] = useState("");
-  const [joiningDate, setJoiningDate] = useState<Date>(new Date());
-  const [role, setRole] = useState("");
-  const [employeeId, setEmployeeId] = useState("");
+  const [userList, setUserList] = useState<User[]>([])
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -38,29 +30,7 @@ export default function UserCard() {
           return;
         }
 
-        const [
-          {
-            name,
-            email,
-            phone,
-            image,
-            designation,
-            department,
-            joiningDate,
-            role,
-            employeeId,
-          },
-        ] = result;
-
-        setName(name);
-        setEmail(email);
-        setPhone(phone ?? "");
-        setImage(image ?? "");
-        setDepartment(department ?? "");
-        setDesignation(designation ?? "");
-        setRole(role);
-        setEmployeeId(employeeId ?? "");
-        setJoiningDate(joiningDate ?? new Date());
+        setUserList(result);
       } finally {
         setLoading(false);
       }
@@ -104,30 +74,35 @@ export default function UserCard() {
           </CardContent>
         </Card>
       ) : (
-        <div className="rounded-2xl border bg-white p-6 shadow-sm transition-all hover:shadow-lg">
+        <div>
+          {userList.map((user) => (
+            <div
+              key={user.id}
+              className="rounded-2xl border bg-white p-6 shadow-sm transition-all hover:shadow-lg"
+            >
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="flex gap-4">
               <Avatar className="h-16 w-16">
-                <AvatarImage src={image ?? ""} />
+                <AvatarImage src={user.image ?? ""} />
                 <AvatarFallback className="text-lg font-semibold">
-                  {name.charAt(0)}
+                  {user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
 
               <div>
-                <h2 className="text-xl font-semibold">{name}</h2>
+                <h2 className="text-xl font-semibold">{user.name}</h2>
 
-                <p className="text-sm text-muted-foreground">{employeeId}</p>
+                <p className="text-sm text-muted-foreground">{user.employeeId}</p>
 
                 <Badge
                   className={`mt-2 ${
-                    role === UserRole.ADMIN
+                    user.role === UserRole.ADMIN
                       ? "bg-red-100 text-red-700"
                       : "bg-blue-100 text-blue-700"
                   }`}
                 >
-                  {role}
+                  {user.role}
                 </Badge>
               </div>
             </div>
@@ -144,27 +119,36 @@ export default function UserCard() {
           <div className="space-y-4">
             <div className="flex items-center gap-3 text-sm">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              <span>{email}</span>
+              <span>{user.email}</span>
+            </div>
+
+            <div className="flex items-center gap-3 text-sm">
+              <Mail className="h-4 w-4 text-muted-foreground" />
+              <span>{user.employeeId}</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Phone className="h-4 w-4 text-muted-foreground" />
-              <span>{phone || "Not Added"}</span>
+              <span>{user.phone || "Not Added"}</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Briefcase className="h-4 w-4 text-muted-foreground" />
-              <span>{designation}</span>
+              <span>{user.designation}</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Building2 className="h-4 w-4 text-muted-foreground" />
-              <span>{department}</span>
+              <span>{user.department}</span>
             </div>
 
             <div className="flex items-center gap-3 text-sm">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>{joiningDate.toLocaleDateString("en-GB")}</span>
+              <span>
+                {user.joiningDate
+                  ? user.joiningDate.toLocaleDateString("en-GB")
+                  : "Not Added"}
+              </span>
             </div>
           </div>
 
@@ -174,6 +158,8 @@ export default function UserCard() {
 
             <Button variant="destructive">Delete</Button>
           </div>
+        </div>
+          ))}
         </div>
       )}
     </div>

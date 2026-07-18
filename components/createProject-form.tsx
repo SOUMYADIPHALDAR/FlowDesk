@@ -32,46 +32,46 @@ export default function CreateProjectForm() {
   const [selectedMembers, setSelectedMembers] = useState<User[]>([]);
   const [leaderId, setLeaderId] = useState<string>("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-    const previewUrlRef = useRef<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const previewUrlRef = useRef<string | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [isPending, setIsPending] = useState(false);
 
-   useEffect(() => {
-      return () => {
-        if (previewUrlRef.current) {
-          URL.revokeObjectURL(previewUrlRef.current);
-        }
-      };
-    }, []);
-  
-    function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
-      const file = event.target.files?.[0] ?? null;
-  
-      if (!file) return;
-  
-      if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
-        toast.error("Choose a JPG, PNG, or WebP image");
-        event.target.value = "";
-        return;
-      }
-  
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error("Image must be 5 MB or smaller");
-        event.target.value = "";
-        return;
-      }
-  
+  useEffect(() => {
+    return () => {
       if (previewUrlRef.current) {
         URL.revokeObjectURL(previewUrlRef.current);
       }
-  
-      const nextPreviewUrl = URL.createObjectURL(file);
-      previewUrlRef.current = nextPreviewUrl;
-      setSelectedFile(file);
-      setPreviewUrl(nextPreviewUrl);
+    };
+  }, []);
+
+  function handleImageChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0] ?? null;
+
+    if (!file) return;
+
+    if (!file.type.match(/^image\/(jpeg|png|webp)$/)) {
+      toast.error("Choose a JPG, PNG, or WebP image");
+      event.target.value = "";
+      return;
     }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be 5 MB or smaller");
+      event.target.value = "";
+      return;
+    }
+
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+
+    const nextPreviewUrl = URL.createObjectURL(file);
+    previewUrlRef.current = nextPreviewUrl;
+    setSelectedFile(file);
+    setPreviewUrl(nextPreviewUrl);
+  }
 
   function addMember(user: User) {
     setIsPending(true);
@@ -112,7 +112,29 @@ export default function CreateProjectForm() {
     const projectName = String(formData.get("projectName"));
     const description = String(formData.get("description"));
 
-    console.log(projectName);
+    let image: string | undefined;
+
+    if (selectedFile) {
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", selectedFile);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: uploadFormData,
+      });
+      const uploadResponse = (await response.json()) as {
+        error?: string;
+        url?: string;
+      };
+
+      if (!response.ok || !uploadResponse.url) {
+        toast.error(uploadResponse.error ?? "Image upload failed");
+        setIsPending(false);
+        return;
+      }
+
+      image = uploadResponse.url;
+    }
 
     const data = {
       projectName,
@@ -121,6 +143,7 @@ export default function CreateProjectForm() {
       endDate: new Date(endDate),
       leaderId,
       memberIds: selectedMembers.map((user) => user.id),
+      image,
     };
 
     const { error } = await CreateProjectAction(data);
@@ -372,7 +395,7 @@ export default function CreateProjectForm() {
 
                 <SelectContent>
                   {selectedMembers.map((member) => (
-                    <SelectItem key={member.id} value={member.name}>
+                    <SelectItem key={member.id} value={member.id}>
                       {member.name}
                     </SelectItem>
                   ))}

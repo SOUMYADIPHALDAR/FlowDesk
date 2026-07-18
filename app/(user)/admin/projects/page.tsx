@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
+import ProjectCard from "@/components/project-card";
 
 export default function AdminProjectsPage() {
   return (
@@ -28,7 +29,7 @@ export default function AdminProjectsPage() {
         </header>
 
         <div className="rounded-[22px] border border-slate-100 bg-slate-50/55 p-3 sm:p-5">
-          
+          <ProjectCard />
         </div>
       </section>
     </main>

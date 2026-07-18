@@ -23,12 +23,15 @@ import { useEffect, useState } from "react";
 import Loading from "./loading";
 import { GetManyProjectsAction } from "@/action/getPorject.action";
 import { toast } from "sonner";
+import Image from "next/image";
+import RemoveProjectAction from "@/action/removeProject.action";
 
 interface ProjectCardProps {
   id: string;
   name: string;
   description: string | null;
   status: ProjectStatus;
+  image?: string | null;
 
   leader: {
     name: string;
@@ -50,7 +53,7 @@ export default function ProjectCard() {
       try {
         setLoading(true);
         const { error, result } = await GetManyProjectsAction();
-
+        
         if (error) {
           toast.error(error);
           return;
@@ -70,6 +73,23 @@ export default function ProjectCard() {
     fetchProjects();
   }, []);
 
+  async function handleDelete(id: string) {
+    setLoading(true);
+    try{
+      const { error} = await RemoveProjectAction(id);
+
+      if(error){
+        toast.error(error);
+        return;
+      }
+
+      const newProjectList = projectList.filter((project) => project.id !== id);
+      setProjectList(newProjectList);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <div>
       {loading ? (
@@ -81,6 +101,19 @@ export default function ProjectCard() {
               key={project.id}
               className="rounded-2xl transition-all hover:-translate-y-1 hover:shadow-lg"
             >
+              <div className="relative mx-6 mt-6 h-16 w-16 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
+                {project.image ? (
+                  <Image
+                    src={project.image}
+                    alt={project.name}
+                    fill
+                    className="object-cover"
+                    sizes="64px"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-slate-200" />
+                )}
+              </div>
               <CardHeader className="space-y-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
@@ -176,7 +209,12 @@ export default function ProjectCard() {
 
                 <Button variant="secondary">Edit</Button>
 
-                <Button variant="destructive">Delete</Button>
+                <Button
+                  onClick={() => handleDelete(project.id)}
+                  variant="destructive"
+                >
+                  Delete
+                </Button>
               </CardFooter>
             </Card>
           ))}

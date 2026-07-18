@@ -3,10 +3,10 @@
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
 
-export default async function SearchUserAction(name: string) {
+export default async function SearchUserAction(id: string) {
   try {
     const result = await prisma.user.findUnique({
-      where: { name: name },
+      where: { employeeId: id },
     });
 
     if (!result) {

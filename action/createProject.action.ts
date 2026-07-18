@@ -13,6 +13,7 @@ interface CreateProjectActionProps {
   endDate: Date;
   leaderId: string;
   memberIds: string[];
+  image?: string;
 }
 
 export default async function CreateProjectAction(
@@ -26,8 +27,15 @@ export default async function CreateProjectAction(
     };
   }
 
-  const { projectName, description, startDate, endDate, leaderId, memberIds } =
-    validation.data;
+  const {
+    projectName,
+    description,
+    startDate,
+    endDate,
+    leaderId,
+    memberIds,
+    image,
+  } = validation.data;
 
   const session = await auth.api.getSession({
     headers: await headers(),
@@ -46,6 +54,7 @@ export default async function CreateProjectAction(
         endDate,
         leaderId,
         ownerId: session.user.id,
+        image,
         members: {
           create: memberIds.map((userId) => {
             return {
