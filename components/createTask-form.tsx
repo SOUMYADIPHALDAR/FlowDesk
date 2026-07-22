@@ -34,7 +34,7 @@ export default function CreateTaskForm() {
   const [projectName, setProjectName] = useState("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [ownerName, setOwnerName] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [projectId, setProjectId] = useState("");
   const [userId, setUserId] = useState("");
   const [endDate, setEndDate] = useState<Date | null>(null);
@@ -75,13 +75,13 @@ export default function CreateTaskForm() {
 
   async function handleGetUser() {
     setLoading(true);
-    if (!ownerName.trim()) {
-      toast.error("Eneter a User Name..");
+    if (!employeeId) {
+      toast.error("Eneter a employeeid..");
       return;
     }
 
     try {
-      const { error, result } = await SearchUserAction(ownerName);
+      const { error, result } = await SearchUserAction(employeeId);
 
       if (error) {
         toast.error(error);
@@ -197,8 +197,8 @@ export default function CreateTaskForm() {
 
                 <div className="flex">
                   <Input
-                    value={ownerName}
-                    onChange={(e) => setOwnerName(e.target.value)}
+                    value={employeeId}
+                    onChange={(e) => setEmployeeId(e.target.value)}
                     placeholder="Search project..."
                     className="h-[52px] rounded-r-none rounded-l-[15px] border-[1.5px] border-[#DDDDDD]"
                   />
@@ -227,7 +227,7 @@ export default function CreateTaskForm() {
                       onClick={() => {
                         setSelectedUser(null);
                         setUserId(selectedUser.id);
-                        setOwnerName(selectedUser.name);
+                        setEmployeeId(selectedUser.name);
                         toast.success("User selected successfully..");
                       }}
                     >

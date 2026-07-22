@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 import { ProjectStatus, TaskStatus } from "@/lib/generated/prisma/enums";
 import { useEffect, useState } from "react";
-import Loading from "./loading";
+import Loading from "../loading";
 import { GetManyProjectsAction } from "@/action/getPorject.action";
 import { toast } from "sonner";
 
