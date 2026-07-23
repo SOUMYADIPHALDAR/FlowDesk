@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
 import { Prisma} from "@/lib/generated/prisma/client";
 import { useEffect, useState } from "react";
-import FetchTasksAction from "@/action/fetchTasks.action";
+import {FetchTasksAction} from "@/action/fetchTasks.action";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";

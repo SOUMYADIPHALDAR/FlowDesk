@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
 import { useEffect, useState } from "react";
 import Loading from "@/components/loading";
-import FetchTasksAction from "@/action/fetchTasks.action";
+import {FetchTasksAction} from "@/action/fetchTasks.action";
 import { toast } from "sonner";
 
 interface Task {
