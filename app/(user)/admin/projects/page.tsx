@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import ProjectCard from "@/components/project-card";
+import BackButton from "@/components/back-button";
 
 export default function AdminProjectsPage() {
   return (
@@ -8,6 +9,7 @@ export default function AdminProjectsPage() {
       <section className="mx-auto max-w-7xl rounded-[28px] border border-slate-200/80 bg-white/85 p-5 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur sm:p-7 lg:p-8">
         <header className="mb-7 flex flex-col gap-5 border-b border-slate-200 pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div>
+            <BackButton />
             <p className="text-xs font-semibold uppercase tracking-[0.24em] text-[#5570F1]">
               Admin workspace
             </p>

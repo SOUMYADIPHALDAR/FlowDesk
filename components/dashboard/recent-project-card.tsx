@@ -115,8 +115,8 @@ export default function RecentProjectCard() {
                 {/* Footer */}
                 <div className="flex justify-end">
                   <Button variant="ghost" className="gap-2">
-                    <Link href={`/admin/projects/${project.id}`}>
-                      View Project
+                    <Link href="/admin/projects">
+                      View All Project
                       <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>

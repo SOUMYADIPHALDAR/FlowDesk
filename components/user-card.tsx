@@ -41,11 +41,11 @@ export default function UserCard() {
   return (
     <div>
       {loading ? (
-        <Card className="rounded-2xl border shadow-sm">
-          <CardContent className="space-y-6 p-6">
+        <Card className="max-w-md rounded-2xl border shadow-sm">
+          <CardContent className="space-y-5 p-5">
             {/* Header */}
-            <div className="flex items-center gap-4">
-              <Skeleton className="h-16 w-16 rounded-full" />
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3">
+              <Skeleton className="h-14 w-14 rounded-full" />
 
               <div className="flex-1 space-y-2">
                 <Skeleton className="h-5 w-40" />
@@ -58,7 +58,7 @@ export default function UserCard() {
             <Skeleton className="h-px w-full" />
 
             {/* User Details */}
-            <div className="space-y-4">
+            <div className="grid gap-3">
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-11/12" />
               <Skeleton className="h-4 w-10/12" />
@@ -67,33 +67,32 @@ export default function UserCard() {
             </div>
 
             {/* Buttons */}
-            <div className="flex justify-end gap-3">
+            <div className="grid grid-flow-col justify-end gap-2">
               <Skeleton className="h-10 w-20 rounded-lg" />
               <Skeleton className="h-10 w-20 rounded-lg" />
             </div>
           </CardContent>
         </Card>
       ) : (
-        <div>
+        <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {userList.map((user) => (
             <div
               key={user.id}
-              className="rounded-2xl border bg-white p-6 shadow-sm transition-all hover:shadow-lg"
+              className="rounded-2xl border bg-white p-5 shadow-sm transition-all hover:shadow-lg"
             >
           {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="flex gap-4">
-              <Avatar className="h-16 w-16">
+          <div className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
+              <Avatar className="h-14 w-14">
                 <AvatarImage src={user.image ?? ""} />
                 <AvatarFallback className="text-lg font-semibold">
                   {user.name.charAt(0)}
                 </AvatarFallback>
               </Avatar>
 
-              <div>
-                <h2 className="text-xl font-semibold">{user.name}</h2>
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-semibold">{user.name}</h2>
 
-                <p className="text-sm text-muted-foreground">{user.employeeId}</p>
+                <p className="truncate text-sm text-muted-foreground">{user.employeeId}</p>
 
                 <Badge
                   className={`mt-2 ${
@@ -105,44 +104,39 @@ export default function UserCard() {
                   {user.role}
                 </Badge>
               </div>
-            </div>
-
-            <Button variant="outline" size="sm">
-              View
-            </Button>
           </div>
 
           {/* Divider */}
-          <div className="my-5 border-t" />
+          <div className="my-4 border-t" />
 
           {/* Details */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 text-sm">
+          <div className="grid gap-3">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              <span>{user.email}</span>
+              <span className="truncate">{user.email}</span>
             </div>
 
-            <div className="flex items-center gap-3 text-sm">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
               <Mail className="h-4 w-4 text-muted-foreground" />
-              <span>{user.employeeId}</span>
+              <span className="truncate">{user.employeeId}</span>
             </div>
 
-            <div className="flex items-center gap-3 text-sm">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
               <Phone className="h-4 w-4 text-muted-foreground" />
-              <span>{user.phone || "Not Added"}</span>
+              <span className="truncate">{user.phone || "Not Added"}</span>
             </div>
 
-            <div className="flex items-center gap-3 text-sm">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
               <Briefcase className="h-4 w-4 text-muted-foreground" />
-              <span>{user.designation}</span>
+              <span className="truncate">{user.designation}</span>
             </div>
 
-            <div className="flex items-center gap-3 text-sm">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
               <Building2 className="h-4 w-4 text-muted-foreground" />
-              <span>{user.department}</span>
+              <span className="truncate">{user.department}</span>
             </div>
 
-            <div className="flex items-center gap-3 text-sm">
+            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
               <Calendar className="h-4 w-4 text-muted-foreground" />
               <span>
                 {user.joiningDate
@@ -153,7 +147,7 @@ export default function UserCard() {
           </div>
 
           {/* Footer */}
-          <div className="mt-6 flex justify-end gap-3">
+          <div className="mt-5 grid grid-flow-col justify-end gap-2">
             <Button variant="outline">Edit</Button>
 
             <Button variant="destructive">Delete</Button>
