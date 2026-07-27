@@ -1,12 +1,43 @@
 "use server";
 
+import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
+import { headers } from "next/headers";
 
 export async function FetchTasksAction() {
   try {
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session?.user) {
+      return { error: "Unauthorized access.", result: [] };
+    }
+
     const result = await prisma.task.findMany({
+      where:
+        session.user.role === "ADMIN"
+          ? undefined
+          : {
+              OR: [
+                { project: { ownerId: session.user.id } },
+                {
+                  project: {
+                    members: {
+                      some: { userId: session.user.id },
+                    },
+                  },
+                },
+              ],
+            },
       include: {
+        project: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
         assignee: {
           select: {
             name: true,
@@ -23,10 +54,12 @@ export async function FetchTasksAction() {
 
     return { error: null, result };
   } catch (err) {
+    console.error("Failed to fetch tasks:", err);
+
     if (err instanceof APIError) {
       return { error: err.message, result: [] };
     }
-    return { error: "Internel server error", result: [] };
+    return { error: "Internal server error", result: [] };
   }
 }
 
