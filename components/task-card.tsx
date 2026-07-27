@@ -4,13 +4,19 @@ import { Clock3, Lightbulb, MessageCircle, Plus } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
-import { Prisma} from "@/lib/generated/prisma/client";
+import { Prisma } from "@/lib/generated/prisma/client";
 import { useEffect, useState } from "react";
-import {FetchTasksAction} from "@/action/fetchTasks.action";
+import { FetchTasksAction } from "@/action/fetchTasks.action";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "./ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "./ui/tooltip";
 import Loading from "@/components/loading";
+import Link from "next/link";
 
 const statusStyles: Record<TaskStatus, string> = {
   PLANNING: "bg-yellow-100 text-yellow-700",
@@ -79,7 +85,7 @@ export default function TaskCard() {
               key={task.id}
               className="mb-4 rounded-2xl shadow-sm transition hover:shadow-md duration-300 hover:-translate-y-1"
             >
-              <CardContent className="flex items-center justify-between p-6 cursor-pointer">
+              <CardContent className="flex items-center justify-between p-6">
                 {/* Left Section */}
                 <div className="flex items-center gap-5">
                   <div className="rounded-xl bg-blue-100 p-3">
@@ -133,14 +139,17 @@ export default function TaskCard() {
                   {/* Right Section */}
                   <div className="flex items-center gap-2">
                     {/* Comment Count */}
-                    <div className="flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-2">
-                      <MessageCircle className="h-4 w-4 text-slate-600" />
+                    <Link href={`/admin/tasks/${task.id}/comments`}>
+                    <div className="flex items-center gap-1 rounded-lg bg-slate-100 px-3 py-2 cursor-pointer">
+                      
+                        <MessageCircle className="h-4 w-4 text-slate-600" />
 
-                      {/* Hide text on mobile */}
-                      <span className="hidden md:inline text-sm font-medium text-slate-700">
-                        {task._count.comments}
-                      </span>
+                        {/* Hide text on mobile */}
+                        <span className="hidden md:inline text-sm font-medium text-slate-700">
+                          {task._count.comments}
+                        </span>
                     </div>
+                    </Link>
 
                     {/* Due Date */}
                     <TooltipProvider>
