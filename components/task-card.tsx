@@ -38,49 +38,17 @@ type TaskWithRelations = Prisma.TaskGetPayload<{
   };
 }>;
 
-export default function TaskCard() {
-  const [taskList, setTaskList] = useState<TaskWithRelations[]>([]);
-  const [loading, setLoading] = useState(false);
+interface TaskCardProps {
+  taskList: TaskWithRelations[];
+}
 
-  useEffect(() => {
-    async function fetchTasks() {
-      setLoading(true);
-      try {
-        const { error, result } = await FetchTasksAction();
-        if (error) {
-          toast.error(error);
-          return;
-        }
-        if (!result) {
-          toast.error("No tasks found.");
-          return;
-        }
-        setTaskList(result);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchTasks();
-  }, []);
+export default function TaskCard({ taskList }: TaskCardProps) {
+  const [loading] = useState();
 
   if (loading) return <Loading />;
 
-  if (taskList.length === 0) {
-    return (
-      <Card className="border-dashed">
-        <CardContent className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-center">
-          <div className="rounded-full bg-muted p-4">
-            <Lightbulb className="h-6 w-6 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="font-semibold">No tasks to show</p>
-            <p className="mt-1 text-sm text-muted-foreground">
-              New tasks assigned to you will appear here.
-            </p>
-          </div>
-        </CardContent>
-      </Card>
-    );
+  if(!taskList){
+    toast.error("No tasks found");
   }
 
   return (
@@ -98,8 +66,12 @@ export default function TaskCard() {
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="break-words text-lg font-semibold">{task.title}</h3>
-                  <Badge className={priorityStyles[task.priority]}>{task.priority}</Badge>
+                  <h3 className="break-words text-lg font-semibold">
+                    {task.title}
+                  </h3>
+                  <Badge className={priorityStyles[task.priority]}>
+                    {task.priority}
+                  </Badge>
                   <Badge className={statusStyles[task.status]}>
                     {task.status.replace("_", " ")}
                   </Badge>
@@ -117,11 +89,15 @@ export default function TaskCard() {
               <div className="flex items-center gap-3">
                 <Avatar className="h-11 w-11 border">
                   <AvatarImage src={task.assignee?.image ?? ""} />
-                  <AvatarFallback>{task.assignee?.name?.charAt(0) ?? "U"}</AvatarFallback>
+                  <AvatarFallback>
+                    {task.assignee?.name?.charAt(0) ?? "U"}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="hidden lg:block">
                   <p className="text-xs text-muted-foreground">Assigned To</p>
-                  <p className="text-sm font-semibold">{task.assignee?.name ?? "Unassigned"}</p>
+                  <p className="text-sm font-semibold">
+                    {task.assignee?.name ?? "Unassigned"}
+                  </p>
                 </div>
               </div>
 
@@ -143,7 +119,9 @@ export default function TaskCard() {
                       </div>
                     </TooltipTrigger>
                     <TooltipContent>
-                      {task.dueDate ? task.dueDate.toLocaleDateString() : "No due date"}
+                      {task.dueDate
+                        ? task.dueDate.toLocaleDateString()
+                        : "No due date"}
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>

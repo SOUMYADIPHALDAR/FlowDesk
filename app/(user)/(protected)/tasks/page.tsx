@@ -1,8 +1,22 @@
+import { FetchTasksAction } from "@/action/fetchTasks.action";
 import BackButton from "@/components/back-button";
+import ErrorCard from "@/components/error-card";
 import TaskCard from "@/components/task-card";
 import { ClipboardList } from "lucide-react";
 
-export default function UserTasksPage() {
+export default async function UserTasksPage() {
+  const { error, result } = await FetchTasksAction();
+
+  if (error) {
+    return (
+      <ErrorCard
+        title="Unable to load tasks"
+        message={error}
+        retryHref="/tasks"
+      />
+    );
+  }
+
   return (
     <div className="mx-auto w-full max-w-7xl space-y-8">
       <header className="rounded-2xl border bg-card p-5 shadow-sm sm:p-6">
@@ -27,7 +41,9 @@ export default function UserTasksPage() {
               </div>
 
               <div className="w-fit rounded-xl border bg-muted/40 px-4 py-2.5 sm:text-right">
-                <p className="text-xs font-medium text-muted-foreground">Total Tasks</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Total Tasks
+                </p>
                 <p className="text-2xl font-bold leading-tight">12</p>
               </div>
             </div>
@@ -38,10 +54,12 @@ export default function UserTasksPage() {
       <section className="space-y-6">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="text-xl font-semibold">Assigned Tasks</h2>
-          <span className="text-sm text-muted-foreground">Sorted by due date</span>
+          <span className="text-sm text-muted-foreground">
+            Sorted by due date
+          </span>
         </div>
 
-        <TaskCard />
+        <TaskCard taskList={result} />
       </section>
     </div>
   );

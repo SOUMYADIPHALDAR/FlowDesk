@@ -3,8 +3,20 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import TaskCard from "@/components/task-card";
 import BackButton from "@/components/back-button";
+import { FetchTasksAction } from "@/action/fetchTasks.action";
+import ErrorCard from "@/components/error-card";
 
-export default function AdminTaskPage() {
+export default async function AdminTaskPage() {
+  const { error, result } = await FetchTasksAction();
+
+  if (error) {
+    <ErrorCard
+      title="Unable to load tasks"
+      message={error}
+      retryHref="/admin/tasks"
+    />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 p-8">
       <div className="mx-auto max-w-7xl space-y-8">
@@ -36,7 +48,7 @@ export default function AdminTaskPage() {
 
         {/* Task List */}
         <div className="space-y-5">
-          <TaskCard />
+          <TaskCard taskList={result} />
         </div>
       </div>
     </div>
