@@ -5,10 +5,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TaskPriority, TaskStatus } from "@/lib/generated/prisma/enums";
 import { Prisma } from "@/lib/generated/prisma/client";
-import { useEffect, useState } from "react";
-import { FetchTasksAction } from "@/action/fetchTasks.action";
+import { useState } from "react";
 import { toast } from "sonner";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +16,7 @@ import {
 } from "./ui/tooltip";
 import Loading from "@/components/loading";
 import Link from "next/link";
+import TaskDialog from "@/components/task-dialog";
 
 const statusStyles: Record<TaskStatus, string> = {
   PLANNING: "bg-yellow-100 text-yellow-700",
@@ -33,21 +33,39 @@ const priorityStyles: Record<TaskPriority, string> = {
 
 type TaskWithRelations = Prisma.TaskGetPayload<{
   include: {
-    assignee: { select: { name: true; image: true } };
-    _count: { select: { comments: true } };
+    assignee: {
+      select: {
+        name: true;
+        image: true;
+      };
+    };
+    project: {
+      select: {
+        name: true;
+      };
+    };
+    _count: {
+      select: {
+        comments: true;
+      };
+    };
   };
 }>;
 
 interface TaskCardProps {
   taskList: TaskWithRelations[];
+  onTaskClick?: (task: TaskWithRelations) => void;
 }
 
 export default function TaskCard({ taskList }: TaskCardProps) {
   const [loading] = useState();
+  const [selectedTask, setSelectedTask] = useState<TaskWithRelations | null>(
+    null,
+  );
 
   if (loading) return <Loading />;
 
-  if(!taskList){
+  if (!taskList) {
     toast.error("No tasks found");
   }
 
@@ -64,7 +82,7 @@ export default function TaskCard({ taskList }: TaskCardProps) {
                 <Lightbulb className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
 
-              <div className="min-w-0">
+              <div onClick={() => setSelectedTask(task)} className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="break-words text-lg font-semibold">
                     {task.title}
@@ -131,6 +149,11 @@ export default function TaskCard({ taskList }: TaskCardProps) {
                 </span>
               </div>
             </div>
+            <TaskDialog
+              task={selectedTask}
+              open={!!selectedTask}
+              onClose={() => setSelectedTask(null)}
+            />
           </CardContent>
         </Card>
       ))}
