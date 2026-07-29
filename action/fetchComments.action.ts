@@ -6,18 +6,25 @@ import { APIError } from "better-auth";
 export default async function FetchCommentsAction(taskId: string) {
   try {
     const result = await prisma.comment.findMany({
-      where: { taskId },
+  where: {
+    taskId,
+    parentId: null,
+  },
+  include: {
+    author: true,
+    replies: {
       include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-            role: true,
-          },
-        },
+        author: true,
       },
-    });
+      orderBy: {
+        createdAt: "asc",
+      },
+    },
+  },
+  orderBy: {
+    createdAt: "asc",
+  },
+});
 
     return { error: null, result };
   } catch (err) {

@@ -183,17 +183,21 @@ model Task {
 }
 
 model Comment {
-  id String @id @default(cuid())
+  id        String   @id @default(uuid())
+  body      String
 
-  body String
+  taskId    String
+  authorId  String
+  parentId  String?
 
-  taskId   String
-  authorId String
+  task       Task     @relation(fields: [taskId], references: [id])
+  author     User     @relation("CommentAuthor", fields: [authorId], references: [id])
+
+  parent     Comment?  @relation("CommentReplies", fields: [parentId], references: [id])
+  replies    Comment[] @relation("CommentReplies")
 
   createdAt DateTime @default(now())
-
-  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  author User @relation("CommentAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+  updatedAt DateTime @default(now()) @updatedAt
 }
 
 model Tag {

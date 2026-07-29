@@ -2,27 +2,30 @@
 
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
+import { refresh } from "next/cache";
 import { GetSessionAction } from "./getSession.action";
 
 interface AddCommentActionProps {
   comment: string;
   taskId: string;
+  parentId: string | null;
 }
 
 export async function AddCommentAction({
   comment,
   taskId,
+  parentId,
 }: AddCommentActionProps) {
   try {
-   const { error , session } = await GetSessionAction();
+    const { error, session } = await GetSessionAction();
 
-   if(error){
-    return { error };
-   }
+    if (error) {
+      return { error };
+    }
 
-   if(!session){
-    return { error: "Unable to fetch user details."}
-   }
+    if (!session) {
+      return { error: "Unable to fetch user details." };
+    }
 
     await prisma.comment.create({
       data: {
@@ -37,8 +40,17 @@ export async function AddCommentAction({
             id: session?.user.id,
           },
         },
+        parent: parentId
+          ? {
+              connect: {
+                id: parentId,
+              },
+            }
+          : undefined,
       },
     });
+
+    refresh();
 
     return { error: null };
   } catch (err) {

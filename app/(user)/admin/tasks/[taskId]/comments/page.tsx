@@ -55,7 +55,15 @@ export default async function CommentsPage({ taskId }: { taskId: string }) {
           </CardTitle>
         </CardHeader>
         {result?.map((comment) => (
-          <CommentsCard key={comment.id} comment={comment} currentUser={user} />
+          <div key={comment.id}>
+            <CommentsCard comment={comment} currentUser={user} />
+
+            {comment.replies.map((reply) => (
+              <div key={reply.id} className="ml-12 mt-4 border-l pl-4">
+                <CommentsCard comment={reply} currentUser={user} isReply />
+              </div>
+            ))}
+          </div>
         ))}
       </Card>
     </div>

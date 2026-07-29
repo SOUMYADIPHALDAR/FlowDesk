@@ -13,8 +13,8 @@ export default async function CommentsPage({ taskId }: { taskId: string }) {
   const user = {
     id: data?.session?.user.id,
     name: data?.session?.user.name,
-    role: data?.session?.user.role
-  }
+    role: data?.session?.user.role,
+  };
 
   if (error) {
     return (
@@ -48,15 +48,23 @@ export default async function CommentsPage({ taskId }: { taskId: string }) {
 
       {/* Comments */}
       <Card className="rounded-2xl shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5" />
-          Comments ({result?.length})
-        </CardTitle>
-      </CardHeader>
-      {result?.map((comment) => 
-        <CommentsCard key={comment.id} comment={comment} currentUser={user} />
-      )}
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <MessageSquare className="h-5 w-5" />
+            Comments ({result?.length})
+          </CardTitle>
+        </CardHeader>
+        {result?.map((comment) => (
+          <div key={comment.id}>
+            <CommentsCard comment={comment} currentUser={user} />
+
+            {comment.replies.map((reply) => (
+              <div key={reply.id} className="ml-12 mt-4 border-l pl-4">
+                <CommentsCard comment={reply} currentUser={user} isReply />
+              </div>
+            ))}
+          </div>
+        ))}
       </Card>
     </div>
   );

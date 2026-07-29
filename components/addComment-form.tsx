@@ -20,7 +20,7 @@ export default function AddCommentForm({ taskId }: AddCommentFormProps) {
     e.preventDefault();
     setIsPending(true);
     try{
-      const { error } = await AddCommentAction({ comment, taskId});
+      const { error } = await AddCommentAction({ comment, taskId, parentId: null});
       if(error){
         toast.error(error);
       }
