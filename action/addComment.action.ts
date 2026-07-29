@@ -1,10 +1,8 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
-import { connect } from "http2";
-import { headers } from "next/headers";
+import { GetSessionAction } from "./getSession.action";
 
 interface AddCommentActionProps {
   comment: string;
@@ -16,13 +14,15 @@ export async function AddCommentAction({
   taskId,
 }: AddCommentActionProps) {
   try {
-    const data = await auth.api.getSession({
-      headers: await headers(),
-    });
+   const { error , session } = await GetSessionAction();
 
-    if (!data) {
-      return { error: "Unauthorized access" };
-    }
+   if(error){
+    return { error };
+   }
+
+   if(!session){
+    return { error: "Unable to fetch user details."}
+   }
 
     await prisma.comment.create({
       data: {
@@ -34,7 +34,7 @@ export async function AddCommentAction({
         },
         author: {
           connect: {
-            id: data?.user.id,
+            id: session?.user.id,
           },
         },
       },

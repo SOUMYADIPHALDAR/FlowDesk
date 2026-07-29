@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { MessageSquare, MoreHorizontal } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
@@ -10,6 +9,11 @@ import { useEffect, useState } from "react";
 import FetchCommentsAction from "@/action/fetchComments.action";
 import { toast } from "sonner";
 import Loading from "@/components/loading";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
 
 interface Comment {
   id: string;
@@ -76,13 +80,21 @@ export default function CommentsCard({ taskId }: { taskId: string }) {
                 key={comment.id}
                 className="flex gap-4 border-b pb-5 last:border-none last:pb-0"
               >
-                <Image
-                  src={comment.author.image ?? "/default-avatar.png"}
-                  alt={comment.author.name}
-                  width={42}
-                  height={42}
-                  className="h-10 w-10 rounded-full object-cover"
-                />
+                <Avatar size="lg" className="shrink-0">
+                  <AvatarImage
+                    src={comment.author.image ?? undefined}
+                    alt={`${comment.author.name}'s profile picture`}
+                  />
+                  <AvatarFallback>
+                    {comment.author.name
+                      .split(" ")
+                      .filter(Boolean)
+                      .slice(0, 2)
+                      .map((name) => name[0])
+                      .join("")
+                      .toUpperCase() || "U"}
+                  </AvatarFallback>
+                </Avatar>
 
                 <div className="flex-1">
                   <div className="flex items-start justify-between">

@@ -1,10 +1,9 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ProjectSchema } from "@/lib/validations/projectSchema";
 import { APIError } from "better-auth";
-import { headers } from "next/headers";
+import { GetSessionAction } from "./getSession.action";
 
 interface CreateProjectActionProps {
   projectName: string;
@@ -37,14 +36,14 @@ export default async function CreateProjectAction(
     image,
   } = validation.data;
 
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+  const { error, session } = await GetSessionAction();
 
-  if (!session?.user?.id) {
-    return { error: "Unauthorized access." };
+  if (error) {
+    return { error };
   }
-
+  if (!session) {
+    return { error: "Unable to fetch user details." };
+  }
   try {
     await prisma.project.create({
       data: {
@@ -53,7 +52,7 @@ export default async function CreateProjectAction(
         startDate,
         endDate,
         leaderId,
-        ownerId: session.user.id,
+        ownerId: session?.user.id,
         image,
         members: {
           create: memberIds.map((userId) => {

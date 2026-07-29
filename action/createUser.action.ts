@@ -9,6 +9,7 @@ import { CreateUserSchema } from "@/lib/validations/createUserSchema";
 import { Prisma } from "@/lib/generated/prisma/client";
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
+import { GetSessionAction } from "./getSession.action";
 
 interface CreateUserActionProps {
   name: string;
@@ -21,9 +22,14 @@ interface CreateUserActionProps {
 
 export default async function CreateUserAction(data: CreateUserActionProps) {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const { error, session } = await GetSessionAction();
+    if (error) {
+      return { error };
+    }
+
+    if (!session) {
+      return { error: "Unable to fetch user details." };
+    }
 
     if (!session?.user || session.user.role !== "ADMIN") {
       return { error: "Only administrators can create users." };
@@ -55,21 +61,21 @@ export default async function CreateUserAction(data: CreateUserActionProps) {
     const invitationToken = generateInvitationToken();
     const invitationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
 
-   await prisma.user.create({
-    data: {
-      name,
-      email,
-      employeeId,
-      phone,
-      designation,
-      department,
-      joiningDate,
-      invitationToken,
-      invitationExpires,
-      role: "USER",
-      emailVerified: false
-    }
-   })
+    await prisma.user.create({
+      data: {
+        name,
+        email,
+        employeeId,
+        phone,
+        designation,
+        department,
+        joiningDate,
+        invitationToken,
+        invitationExpires,
+        role: "USER",
+        emailVerified: false,
+      },
+    });
 
     const appUrl = process.env.BETTER_AUTH_URL ?? "http://localhost:3000";
     const activationLink = `${appUrl.replace(/\/$/, "")}/activate?token=${invitationToken}`;

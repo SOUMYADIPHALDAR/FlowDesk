@@ -1,9 +1,8 @@
 "use server";
 
-import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
-import { headers } from "next/headers";
+import { GetSessionAction } from "./getSession.action";
 
 export async function GetOneProjectAction(name: string) {
   try {
@@ -28,14 +27,14 @@ export async function GetOneProjectAction(name: string) {
 
 export async function GetManyProjectsAction() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user?.id) {
-      return { error: "Unauthorized access.." };
+    const { error, session } = await GetSessionAction();
+    if (error) {
+      return { error };
     }
 
+    if (!session) {
+      return { error: "Unable to fetch user details" };
+    }
     const result = await prisma.project.findMany({
       where: {
         ownerId: session.user.id,

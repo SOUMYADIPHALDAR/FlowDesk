@@ -4,15 +4,17 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { APIError } from "better-auth";
 import { headers } from "next/headers";
+import { GetSessionAction } from "./getSession.action";
 
 export async function FetchTasksAction() {
   try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
+    const { error, session } = await GetSessionAction();
+    if(error)  {
+      return { error };
+    }
 
-    if (!session?.user) {
-      return { error: "Unauthorized access.", result: [] };
+    if(!session ) {
+      return { error: "Unable to fetch user details."}
     }
 
     const result = await prisma.task.findMany({

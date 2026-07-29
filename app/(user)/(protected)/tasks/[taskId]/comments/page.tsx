@@ -2,12 +2,6 @@ import BackButton from "@/components/back-button";
 import CommentsCard from "@/components/comment-card";
 import { MessageSquare } from "lucide-react";
 
-interface CommentsPageProps {
-  params: Promise<{
-    taskId: string;
-  }>;
-}
-
 export default function CommentsPage({
   taskId,
 }: {
