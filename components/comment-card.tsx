@@ -1,21 +1,34 @@
 "use client";
 
-import { MessageSquare, MoreHorizontal } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
+import {
+  MoreHorizontal,
+  Reply,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import FetchCommentsAction from "@/action/fetchComments.action";
-import { toast } from "sonner";
-import Loading from "@/components/loading";
+import {
+  CardContent,
+} from "@/components/ui/card";
+
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar";
 
-interface Comment {
+import { Button } from "@/components/ui/button";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { UserRole } from "@/lib/generated/prisma/enums";
+
+interface CommentWithRelations {
   id: string;
   body: string;
   createdAt: Date;
@@ -27,102 +40,113 @@ interface Comment {
   };
 }
 
-export default function CommentsCard({ taskId }: { taskId: string }) {
-  const [commentList, setCommentList] = useState<Comment[]>([]);
-  const [loading, setLoading] = useState(false);
+interface User {
+  id?: string;
+  name?: string | null;
+  role?: UserRole | string | null;
+}
 
-  useEffect(() => {
-    async function getComments() {
-      setLoading(true);
+interface CommentCardProps {
+  comment: CommentWithRelations;
+  currentUser:User
+}
 
-      try {
-        const { error, result } = await FetchCommentsAction(taskId);
+export default function CommentsCard({
+  comment,
+  currentUser,
+}: CommentCardProps) {
+  const isAuthor = currentUser?.id === comment.author.id;
+  const isAdmin = currentUser?.role === "ADMIN";
 
-        if (error) {
-          toast.error(error);
-          return;
-        }
+  const permissions = {
+    canReply: true,
+    canEdit: isAuthor,
+    canDelete: isAuthor,
+  };
 
-        if (!result) {
-          toast.error("No comments found");
-          return;
-        }
-
-        setCommentList(result);
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    void getComments();
-  }, [taskId]);
+  const showMenu =
+    permissions.canEdit || permissions.canDelete;
 
   return (
-    <Card className="rounded-2xl shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="flex items-center gap-2">
-          <MessageSquare className="h-5 w-5" />
-          Comments ({commentList.length})
-        </CardTitle>
-      </CardHeader>
+    <CardContent>
+      <div className="flex gap-4 border-b pb-5 last:border-none last:pb-0">
+        <Avatar className="h-11 w-11 shrink-0">
+          <AvatarImage
+            src={comment.author.image ?? ""}
+          />
 
-      <CardContent>
-        {loading ? (
-          <Loading />
-        ) : commentList.length === 0 ? (
-          <div className="flex h-40 items-center justify-center">
-            <p className="text-sm text-muted-foreground">No comments yet.</p>
-          </div>
-        ) : (
-          <div className="space-y-6">
-            {commentList.map((comment) => (
-              <div
-                key={comment.id}
-                className="flex gap-4 border-b pb-5 last:border-none last:pb-0"
-              >
-                <Avatar size="lg" className="shrink-0">
-                  <AvatarImage
-                    src={comment.author.image ?? undefined}
-                    alt={`${comment.author.name}'s profile picture`}
-                  />
-                  <AvatarFallback>
-                    {comment.author.name
-                      .split(" ")
-                      .filter(Boolean)
-                      .slice(0, 2)
-                      .map((name) => name[0])
-                      .join("")
-                      .toUpperCase() || "U"}
-                  </AvatarFallback>
-                </Avatar>
+          <AvatarFallback>
+            {(comment.author.name ?? "")
+              .split(" ")
+              .filter(Boolean)
+              .slice(0, 2)
+              .map((word) => word[0])
+              .join("")
+              .toUpperCase() || "U"}
+          </AvatarFallback>
+        </Avatar>
 
-                <div className="flex-1">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h4 className="font-medium">{comment.author.name}</h4>
+        <div className="flex-1">
+          <div className="flex items-start justify-between">
+            <div>
+              <h4 className="font-medium">
+                {comment.author.name}
+              </h4>
 
-                      <p className="text-xs text-muted-foreground">
-                        {comment.author.role} •{" "}
-                        {formatDistanceToNow(comment.createdAt, {
-                          addSuffix: true,
-                        })}
-                      </p>
-                    </div>
+              <p className="text-xs text-muted-foreground">
+                {comment.author.role} •{" "}
+                {formatDistanceToNow(comment.createdAt, {
+                  addSuffix: true,
+                })}
+              </p>
+            </div>
 
+            {showMenu && (
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
                     <Button variant="ghost" size="icon">
                       <MoreHorizontal className="h-4 w-4" />
                     </Button>
-                  </div>
+                  }
+                />
 
-                  <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
-                    {comment.body}
-                  </p>
-                </div>
-              </div>
-            ))}
+                <DropdownMenuContent align="end">
+                  {permissions.canEdit && (
+                    <DropdownMenuItem>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Edit
+                    </DropdownMenuItem>
+                  )}
+
+                  {permissions.canDelete && (
+                    <DropdownMenuItem className="text-destructive focus:text-destructive">
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Delete
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-muted-foreground">
+            {comment.body}
+          </p>
+
+          <div className="mt-4 flex items-center gap-2">
+            {permissions.canReply && (
+              <Button
+                variant="ghost"
+                size="sm"
+              >
+                <Reply className="mr-2 h-4 w-4" />
+                Reply
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    </CardContent>
   );
 }

@@ -59,7 +59,7 @@ export default async function UserTasksPage() {
           </span>
         </div>
 
-        <TaskCard taskList={result} />
+        <TaskCard taskList={result ?? []} />
       </section>
     </div>
   );
