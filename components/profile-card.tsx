@@ -12,7 +12,7 @@ import GetUser from "@/action/getUser.action";
 
 export default function UserProfileCard() {
   const { session } = useAuth();
-  const [user, setUser] = useState<User | null>(null)
+  const [user, setUser] = useState<User | null>(null);
   const userName = session?.name ?? "Users";
   const initials =
     userName
@@ -27,18 +27,18 @@ export default function UserProfileCard() {
   useEffect(() => {
     async function FetchUser() {
       try {
-        if(!session?.id){
+        if (!session?.id) {
           toast.error("Unauthorized access");
-           return ;
+          return;
         }
 
-        const { error, result} = await GetUser(session.id);
+        const { error, result } = await GetUser(session.id);
 
-        if(error){
+        if (error) {
           toast.error(error);
           return;
         }
-        if(!result){
+        if (!result) {
           toast.error("Failed to get user information.");
           setUser(null);
           return;
@@ -46,13 +46,13 @@ export default function UserProfileCard() {
         console.log(result);
         setUser(result);
       } catch (err) {
-        if(err instanceof Error){
-          toast.error(err.message)
+        if (err instanceof Error) {
+          toast.error(err.message);
         }
       }
     }
     FetchUser();
-  }, [])
+  }, []);
 
   return (
     <Card className="w-full rounded-[20px] bg-[#FDFEFF] shadow-[0_4px_4px_rgba(0,0,0,0.25)]">

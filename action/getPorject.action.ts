@@ -37,7 +37,18 @@ export async function GetManyProjectsAction() {
     }
     const result = await prisma.project.findMany({
       where: {
-        ownerId: session.user.id,
+        OR: [
+          {
+            ownerId: session.user.id,
+          },
+          {
+            members: {
+              some: {
+                userId: session.user.id
+              }
+            }
+          }
+        ]
       },
       include: {
         leader: {
