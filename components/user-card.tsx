@@ -13,14 +13,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { User } from "@/lib/generated/prisma/client";
 import ConfirmDialog from "@/components/confirm-dialog";
 import UpdateUserAction from "@/action/updateUser.action";
+import RemoveUserAction from "@/action/removeUser.action";
 
 export default function UserCard() {
   const [userList, setUserList] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const [dialog, setDialog] = useState(false);
+  const [dialog, setDialog] = useState<"upgrade" | "delete" | null>(null);
 
-  useEffect(() => {
+  const description = useEffect(() => {
     async function fetchUser() {
       setLoading(true);
       try {
@@ -43,11 +44,11 @@ export default function UserCard() {
   }, []);
 
   async function handlUserUpgrade() {
-    if(!selectedUser) return ;
-    
+    if (!selectedUser) return;
+
     const { error } = await UpdateUserAction(selectedUser.id);
 
-    if(error) {
+    if (error) {
       toast.error(error);
     }
 
@@ -56,7 +57,23 @@ export default function UserCard() {
     const newUserList = userList.filter((user) => user.id !== selectedUser.id);
     setUserList(newUserList);
 
-    setDialog(false);
+    setDialog(null);
+  }
+
+  async function handleDelete() {
+    if(!selectedUser) return;
+
+    const { error} = await RemoveUserAction(selectedUser.id);
+    if(error) {
+      toast.error(error);
+      return;
+    }
+
+    toast.success(`${selectedUser.name} is deleted successfully.`);
+    const newUserList = userList.filter((user) => user.id !== selectedUser.id);
+
+    setUserList(newUserList);
+    setDialog(null);
   }
 
   return (
@@ -176,25 +193,47 @@ export default function UserCard() {
                 <Button
                   className="bg-blue-300 text-blue-900 hover:bg-blue-400"
                   onClick={() => {
-                    setDialog(true);
+                    setDialog("upgrade");
                     setSelectedUser(user);
                   }}
                 >
                   Upgrade
                 </Button>
 
-                <Button variant="destructive">Delete</Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    setDialog("delete");
+                    setSelectedUser(user);
+                  }}
+                >
+                  Delete
+                </Button>
               </div>
             </div>
           ))}
 
           <ConfirmDialog
-            open={dialog}
-            onOpenChange={setDialog}
+            open={dialog === "upgrade"}
+            onOpenChange={(open) => {
+              if (!open) setDialog(null);
+            }}
             title="Promote User"
             description={`Are you sure you want to promote ${selectedUser?.name} to Administrator? This user will receive full administrative privileges.`}
             confirmText="Promote"
             onConfirm={handlUserUpgrade}
+          />
+
+          <ConfirmDialog
+            open={dialog === "delete"}
+            onOpenChange={(open) => {
+              if (!open) setDialog(null);
+            }}
+            title="Delete User"
+            description={`Delete ${selectedUser?.name}? This action cannot be undone.`}
+            confirmText="Delete"
+            variant="destructive"
+            onConfirm={handleDelete}
           />
         </div>
       )}

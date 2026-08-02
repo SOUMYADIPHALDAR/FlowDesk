@@ -10,7 +10,7 @@ export default function GetStartedButton() {
   const normalizedRole = session?.role?.toUpperCase();
   const dashboard =
     normalizedRole === "ADMIN" ? "/admin/dashboard" : "/dashboard";
-  const destination = session ? dashboard : "/signin";
+  const destination = session ? dashboard : "/register";
 
   return (
     <Link
