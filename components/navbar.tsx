@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import GetStartedButton from "@/components/get-started-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Palette, Search } from "lucide-react";
-import { Input } from "./ui/input";
+import { Input } from "@/components/ui/input";
 import { useAuth } from "@/lib/auth-context";
 
 export default function Navbar() {
@@ -44,14 +44,12 @@ export default function Navbar() {
         </Link>
 
         {/* Right Section */}
-        <div className="flex flex-1 min-w-0 items-center justify-end gap-3 md:gap-6">
-          <div className="relative sm:flex flex-1 max-w-105">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#787486]" />
+        <div className="flex flex-1 min-w-0 items-center justify-end gap-3 md:gap-4">
+          {/* Search */}
+          <div className="relative hidden sm:block flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
 
-            <Input
-              placeholder="Search..."
-              className="h-10 w-full rounded-md border-[#9A93B3] bg-white pl-10"
-            />
+            <Input placeholder="Search..." className="h-10 w-full pl-10" />
           </div>
 
           {session ? (
@@ -62,12 +60,10 @@ export default function Navbar() {
                 className="hidden items-center gap-3 lg:flex"
               >
                 <div className="text-right">
-                  <p className="text-base font-normal text-[#0D062D]">
-                    {userName}
-                  </p>
+                  <p className="text-sm font-medium">{userName}</p>
                 </div>
 
-                <Avatar className="h-12 w-12 border border-[#F0F6FF]">
+                <Avatar className="h-10 w-10">
                   {session.image ? (
                     <AvatarImage src={session.image} />
                   ) : (
@@ -76,9 +72,9 @@ export default function Navbar() {
                 </Avatar>
               </Link>
 
-              {/* Mobile Avatar Only */}
+              {/* Mobile */}
               <Link href={profile} className="lg:hidden">
-                <Avatar className="h-10 w-10 border border-[#F0F6FF]">
+                <Avatar className="h-10 w-10">
                   {session.image ? (
                     <AvatarImage src={session.image} />
                   ) : (
@@ -89,8 +85,7 @@ export default function Navbar() {
             </>
           ) : (
             <>
-              {/* Desktop Buttons */}
-              <div className="hidden items-center gap-3 lg:flex">
+              <div className="hidden items-center gap-2 lg:flex">
                 <Button variant="ghost" onClick={() => router.push("/signin")}>
                   Login
                 </Button>
@@ -98,7 +93,6 @@ export default function Navbar() {
                 <GetStartedButton />
               </div>
 
-              {/* Mobile: Get Started Only */}
               <div className="lg:hidden">
                 <GetStartedButton />
               </div>

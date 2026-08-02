@@ -1,7 +1,19 @@
 import SignInOAuth from "@/components/signin-o-auth";
 import SignInForm from "@/components/signInForm";
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    error?: string;
+    error_description?: string;
+  }>;
+}) {
+  const { error, error_description } = await searchParams;
+  const oauthError = error
+    ? error_description ?? "Google or GitHub sign-in was cancelled or failed. Please try again."
+    : null;
+
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,_rgba(154,195,215,0.25),_transparent_45%),linear-gradient(135deg,_#f8fbfd_0%,_#f0f4f8_100%)] px-4 py-5 text-slate-900 sm:px-6 lg:px-8">
       <main className="mx-auto flex min-h-[calc(100vh-40px)] w-full max-w-6xl flex-col">
@@ -34,6 +46,14 @@ export default function LoginPage() {
               </div>
 
               <div className="px-6 py-8 sm:px-8 lg:px-10 lg:py-10">
+                {oauthError && (
+                  <p
+                    role="alert"
+                    className="mb-4 rounded-xl border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
+                  >
+                    {oauthError}
+                  </p>
+                )}
                 <SignInForm />
 
                 <div className="mt-6 border-t border-slate-200 pt-6">
