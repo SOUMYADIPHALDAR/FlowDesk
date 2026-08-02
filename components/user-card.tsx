@@ -8,13 +8,17 @@ import { UserRole } from "@/lib/generated/prisma/enums";
 import { useEffect, useState } from "react";
 import { GetAllUser } from "@/action/getUser.action";
 import { toast } from "sonner";
-import { Card, CardContent } from "./ui/card";
-import { Skeleton } from "./ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { User } from "@/lib/generated/prisma/client";
+import ConfirmDialog from "@/components/confirm-dialog";
+import UpdateUserAction from "@/action/updateUser.action";
 
 export default function UserCard() {
-  const [userList, setUserList] = useState<User[]>([])
+  const [userList, setUserList] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [dialog, setDialog] = useState(false);
 
   useEffect(() => {
     async function fetchUser() {
@@ -37,6 +41,23 @@ export default function UserCard() {
     }
     fetchUser();
   }, []);
+
+  async function handlUserUpgrade() {
+    if(!selectedUser) return ;
+    
+    const { error } = await UpdateUserAction(selectedUser.id);
+
+    if(error) {
+      toast.error(error);
+    }
+
+    toast.success(`${selectedUser.name} is an Administration now.`);
+
+    const newUserList = userList.filter((user) => user.id !== selectedUser.id);
+    setUserList(newUserList);
+
+    setDialog(false);
+  }
 
   return (
     <div>
@@ -80,80 +101,101 @@ export default function UserCard() {
               key={user.id}
               className="rounded-2xl border bg-white p-5 shadow-sm transition-all hover:shadow-lg"
             >
-          {/* Header */}
-          <div className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
-              <Avatar className="h-14 w-14">
-                <AvatarImage src={user.image ?? ""} />
-                <AvatarFallback className="text-lg font-semibold">
-                  {user.name.charAt(0)}
-                </AvatarFallback>
-              </Avatar>
+              {/* Header */}
+              <div className="grid grid-cols-[auto_1fr_auto] items-start gap-3">
+                <Avatar className="h-14 w-14">
+                  <AvatarImage src={user.image ?? ""} />
+                  <AvatarFallback className="text-lg font-semibold">
+                    {user.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
 
-              <div className="min-w-0">
-                <h2 className="truncate text-lg font-semibold">{user.name}</h2>
+                <div className="min-w-0">
+                  <h2 className="truncate text-lg font-semibold">
+                    {user.name}
+                  </h2>
 
-                <p className="truncate text-sm text-muted-foreground">{user.employeeId}</p>
+                  <p className="truncate text-sm text-muted-foreground">
+                    {user.employeeId}
+                  </p>
 
-                <Badge
-                  className={`mt-2 ${
-                    user.role === UserRole.ADMIN
-                      ? "bg-red-100 text-red-700"
-                      : "bg-blue-100 text-blue-700"
-                  }`}
-                >
-                  {user.role}
-                </Badge>
+                  <Badge
+                    className={`mt-2 ${
+                      user.role === UserRole.ADMIN
+                        ? "bg-red-100 text-red-700"
+                        : "bg-blue-100 text-blue-700"
+                    }`}
+                  >
+                    {user.role}
+                  </Badge>
+                </div>
               </div>
-          </div>
 
-          {/* Divider */}
-          <div className="my-4 border-t" />
+              {/* Divider */}
+              <div className="my-4 border-t" />
 
-          {/* Details */}
-          <div className="grid gap-3">
-            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{user.email}</span>
+              {/* Details */}
+              <div className="grid gap-3">
+                <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{user.email}</span>
+                </div>
+
+                <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
+                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{user.employeeId}</span>
+                </div>
+
+                <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
+                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{user.phone || "Not Added"}</span>
+                </div>
+
+                <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
+                  <Briefcase className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{user.designation}</span>
+                </div>
+
+                <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
+                  <Building2 className="h-4 w-4 text-muted-foreground" />
+                  <span className="truncate">{user.department}</span>
+                </div>
+
+                <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
+                  <Calendar className="h-4 w-4 text-muted-foreground" />
+                  <span>
+                    {user.joiningDate
+                      ? user.joiningDate.toLocaleDateString("en-GB")
+                      : "Not Added"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="mt-5 grid grid-flow-col justify-end gap-2">
+                <Button
+                  className="bg-blue-300 text-blue-900 hover:bg-blue-400"
+                  onClick={() => {
+                    setDialog(true);
+                    setSelectedUser(user);
+                  }}
+                >
+                  Upgrade
+                </Button>
+
+                <Button variant="destructive">Delete</Button>
+              </div>
             </div>
-
-            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{user.employeeId}</span>
-            </div>
-
-            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{user.phone || "Not Added"}</span>
-            </div>
-
-            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
-              <Briefcase className="h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{user.designation}</span>
-            </div>
-
-            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
-              <Building2 className="h-4 w-4 text-muted-foreground" />
-              <span className="truncate">{user.department}</span>
-            </div>
-
-            <div className="grid grid-cols-[auto_1fr] items-center gap-3 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span>
-                {user.joiningDate
-                  ? user.joiningDate.toLocaleDateString("en-GB")
-                  : "Not Added"}
-              </span>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div className="mt-5 grid grid-flow-col justify-end gap-2">
-            <Button variant="outline">Edit</Button>
-
-            <Button variant="destructive">Delete</Button>
-          </div>
-        </div>
           ))}
+
+          <ConfirmDialog
+            open={dialog}
+            onOpenChange={setDialog}
+            title="Promote User"
+            description={`Are you sure you want to promote ${selectedUser?.name} to Administrator? This user will receive full administrative privileges.`}
+            confirmText="Promote"
+            onConfirm={handlUserUpgrade}
+          />
         </div>
       )}
     </div>
