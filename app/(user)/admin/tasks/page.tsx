@@ -48,7 +48,7 @@ export default async function AdminTaskPage() {
 
         {/* Task List */}
         <div className="space-y-5">
-          <TaskCard taskList={result} />
+          <TaskCard taskList={result ?? []} />
         </div>
       </div>
     </div>

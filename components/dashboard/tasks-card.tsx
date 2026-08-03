@@ -40,7 +40,7 @@ export default function RecentTasksCard() {
             if(!result){
                 toast.error("No tasks found");
             }
-            setTasksList(result);
+            setTasksList(result ?? []);
         } finally {
             setLoading(false);
         }
